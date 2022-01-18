@@ -9,6 +9,10 @@ from typing import Iterable, Union
 PRECISION: float = 1e-2
 DECIMAL_PLACES: int = int(-log10(PRECISION))
 
+DATACLASS_KWARGS = {"frozen": True}
+if sys.version_info >= (3, 10):
+    DATACLASS_KWARGS["slots"] = True
+
 
 def ensure_precision(number: float) -> float:
     return round(number, DECIMAL_PLACES)
@@ -17,11 +21,6 @@ def ensure_precision(number: float) -> float:
 def epoch() -> float:
     """Return the current epoch in seconds."""
     return ensure_precision(time.time())
-
-
-DATACLASS_KWARGS = {"frozen": True}
-if sys.version_info >= (3, 10):
-    DATACLASS_KWARGS["slots"] = True
 
 
 @dataclass(**DATACLASS_KWARGS)
