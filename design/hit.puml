@@ -1,0 +1,40 @@
+@startuml
+class Hit {
+    + key: str
+    + cost: int
+    {field} + time: int
+}
+
+
+class Rate {
+    + hits: int
+    + interval: int
+}
+
+
+abstract class Strategy {
+    ~ rate: Rate
+    + get_retry_after(hit: Hit) -> int:
+}
+Strategy -l-> Hit
+Strategy *-r- Rate
+class MovingWindow implements Strategy
+class FixedWindow implements Strategy
+
+
+class MovingWindow {
+    + get_retry_after(hit: Hit) -> int:
+    - get_last_hit() -> Hit
+}
+
+
+class Limiter {
+    - hit_factory: Callable[[], Hit]
+    - strategy: Strategy
+    + attempt_hit(hit: Hit) -> bool
+}
+Limiter -d-> Hit
+Limiter -d-> Strategy
+
+
+@enduml
