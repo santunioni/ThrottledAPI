@@ -1,0 +1,70 @@
+repos:
+
+- repo: https://github.com/Lucas-C/pre-commit-hooks
+  rev: v1.1.10
+  hooks:
+  - id: remove-crlf
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.1.0
+  hooks:
+  - id: check-yaml
+  - id: check-toml
+  - id: debug-statements
+  - id: detect-aws-credentials
+  - id: detect-private-key
+  - id: end-of-file-fixer
+  - id: name-tests-test
+  - id: sort-simple-yaml
+
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.2.0
+  hooks:
+  - id: pretty-format-toml
+    args: [--autofix]
+  - id: pretty-format-yaml
+    args: [--autofix, --indent, '1']
+
+- repo: https://github.com/commitizen-tools/commitizen
+  rev: v2.20.4
+  hooks:
+  - id: commitizen
+    stages: [commit-msg]
+
+- repo: https://github.com/myint/autoflake
+  rev: v1.4
+  hooks:
+  - id: autoflake
+    name: 'autoflake: removes unused variables and imports.'
+    entry: bash -c 'autoflake "$@"; git add -u' --
+    language: python
+    args: [--in-place, --remove-all-unused-imports, --remove-unused-variables, --expand-star-imports, --ignore-init-module-imports]
+    files: \.py$
+    stages:
+    - merge-commit
+
+- repo: https://github.com/PyCQA/isort
+  rev: 5.10.1
+  hooks:
+  - id: isort
+    name: 'isort: sorts import statements.'
+    entry: bash -c 'isort "$@"; git add -u' --
+    language: python
+    args: [--filter-files]
+    files: \.py$
+
+- repo: https://github.com/psf/black
+  rev: 21.12b0
+  hooks:
+  - id: black
+    name: 'black: formats python code according to standards.'
+    entry: bash -c 'black "$@"; git add -u' --
+    language: python
+    files: \.py$
+
+- repo: https://github.com/PyCQA/flake8
+  rev: 4.0.1
+  hooks:
+  - id: flake8
+    name: 'flake8: combines PEP8 style checks and pyflakes for error checking.'
+    args: [--max-line-length, '120', --exclude, resources/write_readme.py]
