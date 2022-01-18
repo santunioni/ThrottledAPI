@@ -46,7 +46,13 @@ version = "0.1.0"
 description = "A rate limiter for FastAPI"
 authors = ["Vinícius Vargas <santunionivinicius@gmail.com>"]
 readme = "README.md"
-include = ["throttled/py.typed"]
+homepage = "https://github.com/santunioni/ThrottledAPI"
+license = "MIT"
+repository = "https://github.com/santunioni/ThrottledAPI"
+include = [
+    "throttled/py.typed",
+    "LICENSE"
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
