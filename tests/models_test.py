@@ -3,21 +3,21 @@ from itertools import repeat
 from throttled.models import Hit, Rate
 
 
-def test_rate_ordering_by_ratio():
+def test_rate_should_be_ordered_by_ratio():
     r1 = Rate(100, 1)
     assert r1 == Rate(1000, 10)
     assert r1 > Rate(200, 3)
     assert r1 < Rate(200, 1)
 
 
-def test_rate_ordering_against_number():
+def test_rate_also_compares_with_number():
     r1 = Rate(100, 1)
     assert r1 == Rate(1000, 10).ratio
     assert r1 > Rate(200, 3).ratio
     assert r1 < Rate(200, 1).ratio
 
 
-def test_create_rate_from_hits():
+def test_rate_from_hits_mimics_their_ratio():
     hits = list(repeat(Hit(), 5))
     hits.extend(list(map(lambda hit: Hit(time=hit.time + 0.1), hits)))
 
@@ -27,7 +27,7 @@ def test_create_rate_from_hits():
     assert rate.ratio == 100
 
 
-def test_create_rate_from_no_hits():
+def test_rate_attributes_from_empty_hits_are_zero():
     rate = Rate.create_from_hits([])
     assert rate.interval == 0
     assert rate.hits == 0

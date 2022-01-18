@@ -6,7 +6,7 @@ from functools import reduce
 from math import log10
 from typing import Iterable, Union
 
-PRECISION: float = 1e-3
+PRECISION: float = 1e-2
 DECIMAL_PLACES: int = int(-log10(PRECISION))
 
 
