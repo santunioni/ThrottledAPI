@@ -1,3 +1,4 @@
+import itertools
 import sys
 import time
 from dataclasses import dataclass, field
@@ -78,10 +79,9 @@ class Rate:
 
     @classmethod
     def create_from_hits(cls, hits: Iterable[Hit]) -> "Rate":
-        hits = sorted(hits)
-        if len(hits) == 0:
-            return Rate(0, 0)
+        it1, it2, it3 = itertools.tee(hits, 3)
+        hits = reduce(lambda a, b: a + b.cost, it1, 0)
         return cls(
-            hits=reduce(lambda a, b: a + b.cost, hits, 0),
-            interval=ensure_precision(hits[-1].time - hits[0].time),
+            hits=hits,
+            interval=ensure_precision(max(it2).time - min(it3).time) if hits > 0 else 0,
         )
