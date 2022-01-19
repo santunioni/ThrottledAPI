@@ -53,13 +53,21 @@ class Rate:
     :return: a Rate object
     """
 
-    hits: int = 2000
-    interval: float = 1
+    hits: int
+    interval: float
 
     @property
     def ratio(self) -> float:
         """Return the rate as float in hits/seconds units."""
         return max(self.hits, 0) / max(self.interval, PRECISION)
+
+    @classmethod
+    def __assert_class(cls, other) -> "Rate":
+        if not isinstance(other, Rate):
+            raise TypeError(
+                f"Can't compare {cls.__name__} with {other.__class__.__name__}"
+            )
+        return other
 
     def __lt__(self, other: Union["Rate", int, float]) -> bool:
         if isinstance(other, (int, float)):
@@ -71,16 +79,17 @@ class Rate:
             return self.ratio > other
         return self.ratio > other.ratio
 
-    def __eq__(self, other: Union["Rate", int, float]) -> bool:
+    def __eq__(self, other) -> bool:
         if isinstance(other, (int, float)):
             return self.ratio == other
+        other = self.__assert_class(other)
         return self.ratio == other.ratio
 
     @classmethod
-    def create_from_hits(cls, hits: Iterable[Hit]) -> "Rate":
+    def from_hits(cls, hits: Iterable[Hit]) -> "Rate":
         it1, it2, it3 = itertools.tee(hits, 3)
-        hits = reduce(lambda a, b: a + b.cost, it1, 0)
+        cost: int = reduce(lambda a, b: a + b.cost, it1, 0)
         return cls(
-            hits=hits,
-            interval=ensure_precision(max(it2).time - min(it3).time) if hits > 0 else 0,
+            hits=cost,
+            interval=ensure_precision(max(it2).time - min(it3).time) if cost > 0 else 0,
         )
