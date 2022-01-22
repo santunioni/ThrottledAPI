@@ -1,5 +1,6 @@
 import itertools
 import sys
+import time as clock
 from dataclasses import dataclass, field
 from functools import reduce
 from typing import Iterable, Union
@@ -16,7 +17,7 @@ class Hit:
         metadata={"description": "The base contribution to the hit key."},
     )
     time: float = field(
-        default_factory=time.time,
+        default_factory=clock.time,
         metadata={
             "units": "seconds",
             "description": "time the hit occurred since epoch.",
