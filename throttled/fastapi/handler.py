@@ -16,7 +16,7 @@ def handle_rate_exceed_func(request: Request, exc: RateLimitExceeded) -> Respons
     return Response(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         content=f"Rate exceeded for key={exc.key}.",
-        headers={"Retry-After": exc.retry_after},
+        headers={"Retry-After": str(exc.retry_after)},
     )
 
 
