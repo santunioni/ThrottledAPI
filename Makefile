@@ -1,9 +1,3 @@
-build:
-	@poetry build
-
-publish: build
-	@poetry publish -u '${PYPI_USERNAME}' -p '${PYPI_PASSWORD}'
-
 lint:
 	@poetry run isort .
 	@poetry run pylint throttled
@@ -20,5 +14,5 @@ checks: lint mypy test
 
 new-version:
 	@cz bump --increment PATCH
-	@make build
+	@poetry build
 	@git push && git push --tags
