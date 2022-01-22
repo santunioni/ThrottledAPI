@@ -4,7 +4,7 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import Response
 
-from throttled.fastapi.limiters import RateLimitExceeded
+from throttled.exceptions import RateLimitExceeded
 
 ExceptionType = Type[Exception]
 HandlerType = Callable[[Request, Exception], Response]
