@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import Deque, NamedTuple
+from typing import Deque, MutableMapping, NamedTuple, Optional
 
 from throttled import Hit, Rate
 from throttled.exceptions import RateLimitExceeded
@@ -21,28 +21,34 @@ class HitsWindow(NamedTuple):
 
 
 class FixedWindowStrategy(Strategy):
-    def __init__(self, limit: Rate):
+    def __init__(
+        self, limit: Rate, cache: Optional[MutableMapping[str, HitsWindow]] = None
+    ):
         self.__limit = limit
-        self.__initialized_at = 0
-        self.__hits = deque()
+        self.__cache: MutableMapping[str, HitsWindow] = cache or {}
 
     def __get_time_spent_in_window(self, hit: Hit) -> float:
         return hit.time % self.__limit.interval
 
     def __maybe_reset(self, hit: Hit):
         initialized_at = hit.time - self.__get_time_spent_in_window(hit)
-        if initialized_at > self.__initialized_at:
-            self.__hits = deque()
-            self.__initialized_at = initialized_at
+
+        if hit.key not in self.__cache:
+            self.__cache[hit.key] = HitsWindow(initialized_at, deque())
+            return
+
+        window = self.__cache[hit.key]
+        if initialized_at > window.initialized_at:
+            self.__cache[hit.key] = HitsWindow(initialized_at, deque())
 
     def __call__(self, hit: Hit):
         self.__maybe_reset(hit)
-        rate = Rate.from_hits(self.__hits)
+        rate = Rate.from_hits(self.__cache[hit.key].hits)
         if rate > self.__limit:
             raise RateLimitExceeded(
-                "global",
+                hit.key,
                 retry_after=int(
                     self.__limit.interval - self.__get_time_spent_in_window(hit)
                 ),
             )
-        self.__hits.append(hit)
+        self.__cache[hit.key].hits.append(hit)
