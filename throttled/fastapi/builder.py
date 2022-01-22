@@ -1,13 +1,9 @@
-from typing import Callable, Iterable, List, Union
+from typing import List, Sequence, Union
 
 from fastapi import Depends, FastAPI
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, DispatchFunction
 
 from .limiters.base import Limiter, Middleware, catcher_middleware
-
-
-def as_dependencies(limiters: Iterable[Callable]) -> List[Depends]:
-    return [Depends(limiter) for limiter in limiters]
 
 
 class APILimiter:
@@ -25,8 +21,17 @@ class APILimiter:
             return
         raise TypeError(f"Object {limiter} is not a Limiter.")
 
-    def instrument(self, app: FastAPI):
-        app.router.dependencies.extend(as_dependencies(self.__dependency_limiters))
-        app.add_middleware(BaseHTTPMiddleware, dispatch=catcher_middleware)
+    @property
+    def dependencies(self) -> Sequence[Depends]:
+        return tuple(Depends(limiter) for limiter in self.__dependency_limiters)
+
+    @property
+    def middlewares(self) -> Sequence[DispatchFunction]:
+        funcs = [catcher_middleware]
         for limiter in self.__middleware_limiters:
-            app.add_middleware(BaseHTTPMiddleware, dispatch=limiter.dispatch)
+            funcs.append(limiter.dispatch)
+        return funcs
+
+    def add_middleware(self, app: FastAPI):
+        for middleware in self.middlewares:
+            app.add_middleware(BaseHTTPMiddleware, dispatch=middleware)
