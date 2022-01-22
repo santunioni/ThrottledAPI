@@ -1,3 +1,9 @@
+## 0.1.16a2 (2022-01-22)
+
+### Perf
+
+- add middlewares for better performance
+
 ## 0.1.16a1 (2022-01-22)
 
 ### Fix
