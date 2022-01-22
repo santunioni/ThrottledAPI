@@ -1,4 +1,5 @@
 from collections import deque
+from typing import Optional
 
 from cachetools import TTLCache
 
@@ -6,8 +7,9 @@ from throttled import Hit, Rate
 
 
 class RateLimitExceeded(Exception):
-    def __init__(self, key: str):
+    def __init__(self, key: str, retry_after: Optional[int] = None):
         self.key = key
+        self.retry_after = retry_after
 
 
 class SimpleLimiter:
@@ -17,12 +19,18 @@ class SimpleLimiter:
 
     def __call__(self):
         hit = Hit(key="global")
-        key = f"{hit.key}:{hit.time // self.__limit.interval}"
+        counter_initialized = int((hit.time // self.__limit.interval) * hit.time)
+        key = f"{hit.key}:{counter_initialized}"
         hits = self.__cache.get(key)
         if hits is None:
             hits = deque()
             self.__cache[key] = hits
         rate = Rate.from_hits(hits)
         if rate > self.__limit:
-            raise RateLimitExceeded(key)
+            raise RateLimitExceeded(
+                key,
+                retry_after=int(
+                    self.__limit.interval - (hit.time - counter_initialized)
+                ),
+            )
         hits.append(hit)
