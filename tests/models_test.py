@@ -1,4 +1,5 @@
 import random
+import time
 from itertools import repeat
 
 import pytest
@@ -21,13 +22,14 @@ def test_rate_also_compares_with_number():
 
 
 def test_rate_from_hits_mimics_their_ratio():
-    hits = list(repeat(Hit(), 5))
-    hits.extend(list(map(lambda hit: Hit(time=hit.time + 0.1), hits)))
+    now = time.time()
+    hits = list(repeat(Hit(time=now), 5))
+    hits.extend(list(map(lambda hit: Hit(time=now + 0.1), hits)))
 
     rate = Rate.from_hits(hits)
-    assert rate.interval == 0.1
     assert rate.hits == 10
-    assert rate.ratio == 100
+    assert round(rate.interval, 2) == 0.1
+    assert round(rate.ratio, 2) == 100
 
 
 def test_rate_attributes_from_empty_hits_are_zero():
@@ -46,11 +48,7 @@ def test_comparing_rate_with_unsupported_should_raise():
         assert rate != obj
 
 
-def test_consecutive_hits_with_same_key_and_cost_should_be_equal():
+def test_later_hit_should_be_greater():
     hit1 = Hit()
     hit2 = Hit()
-    hit3 = Hit(time=hit1.time + 1)
-
-    assert hit1 == hit2
-    assert hit3 > hit1
-    assert hit3 != hit2
+    assert hit1 < hit2

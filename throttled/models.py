@@ -1,26 +1,12 @@
 import itertools
 import sys
-import time
 from dataclasses import dataclass, field
 from functools import reduce
-from math import log10
 from typing import Iterable, Union
-
-PRECISION: float = 1e-2
-DECIMAL_PLACES: int = int(-log10(PRECISION))
 
 DATACLASS_KWARGS = {"frozen": True}
 if sys.version_info >= (3, 10):
     DATACLASS_KWARGS["slots"] = True
-
-
-def ensure_precision(number: float) -> float:
-    return round(number, DECIMAL_PLACES)
-
-
-def epoch() -> float:
-    """Return the current epoch in seconds."""
-    return ensure_precision(time.time())
 
 
 @dataclass(**DATACLASS_KWARGS)
@@ -30,7 +16,7 @@ class Hit:
         metadata={"description": "The base contribution to the hit key."},
     )
     time: float = field(
-        default_factory=epoch,
+        default_factory=time.time,
         metadata={
             "units": "seconds",
             "description": "time the hit occurred since epoch.",
@@ -59,7 +45,7 @@ class Rate:
     @property
     def ratio(self) -> float:
         """Return the rate as float in hits/seconds units."""
-        return max(self.hits, 0) / max(self.interval, PRECISION)
+        return max(self.hits, 0) / max(self.interval, 1e-2)
 
     @classmethod
     def __assert_class(cls, other) -> "Rate":
@@ -91,5 +77,5 @@ class Rate:
         cost: int = reduce(lambda a, b: a + b.cost, it1, 0)
         return cls(
             hits=cost,
-            interval=ensure_precision(max(it2).time - min(it3).time) if cost > 0 else 0,
+            interval=max(it2).time - min(it3).time if cost > 0 else 0,
         )

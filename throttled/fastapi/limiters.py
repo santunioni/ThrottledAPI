@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Callable, Sequence
 
 from fastapi import Depends
@@ -11,10 +11,6 @@ from throttled.strategies import Strategy
 class Limiter(ABC):
     def __init__(self, strategy: Strategy):
         self._strategy = strategy
-
-    @abstractmethod
-    def __call__(self, *args, **kwargs):
-        """Limit the api based on rate."""
 
 
 class GlobalLimiter(Limiter):
