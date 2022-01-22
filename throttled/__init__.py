@@ -1,4 +1,4 @@
 from throttled.models import Hit, Rate
 
 __all__ = ["Rate", "Hit"]
-__version__ = "0.1.13"
+__version__ = "0.1.14"
