@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Sequence
+from typing import Sequence
 
 from starlette import status
 from starlette.middleware.base import RequestResponseEndpoint
@@ -26,7 +26,7 @@ async def catcher_middleware(request: Request, call_next):
 
 
 class Middleware(ABC):
-    _ignored_paths: Sequence[str] = ("/docs", "/redoc", "/favicon.ico", "/openapi.json")
+    _ignored_paths: Sequence[str] = ("docs", "redoc", "favicon.ico", "openapi.json")
 
     def ignore_path(self, path: str):
         ignored = list(self._ignored_paths)
@@ -37,8 +37,9 @@ class Middleware(ABC):
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         try:
-            print(request.path_params)
-            self._maybe_block_request(request)
+            path = str(request.url).replace(str(request.base_url), "")
+            if path not in self._ignored_paths:
+                self._maybe_block_request(request)
             return await call_next(request)
         except RateLimitExceeded as exc:
             return response_from_exception(exc)
@@ -48,7 +49,7 @@ class Middleware(ABC):
         ...
 
 
-class Limiter(Callable, ABC):
+class Limiter(ABC):
     def __init__(self, strategy: Strategy):
         self._strategy = strategy
 
