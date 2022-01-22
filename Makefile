@@ -12,7 +12,6 @@ test:
 
 checks: lint mypy test
 
-new-version:
-	@cz bump --increment PATCH
+push:
 	@poetry build
 	@git push && git push --tags
