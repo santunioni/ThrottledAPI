@@ -5,8 +5,9 @@ from cachetools import TTLCache
 from throttled import Hit, Rate
 
 
-class TooManyHits(Exception):
-    ...
+class RateLimitExceeded(Exception):
+    def __init__(self, key: str):
+        self.key = key
 
 
 class SimpleLimiter:
@@ -23,5 +24,5 @@ class SimpleLimiter:
             self.__cache[key] = hits
         rate = Rate.from_hits(hits)
         if rate > self.__limit:
-            raise TooManyHits
+            raise RateLimitExceeded(key)
         hits.append(hit)
