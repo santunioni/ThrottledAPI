@@ -1,3 +1,3 @@
-from .limiters import SimpleLimiter
+from .limiters import GlobalLimiter, HostBasedLimiter
 
-__all__ = ["SimpleLimiter"]
+__all__ = ["GlobalLimiter", "HostBasedLimiter"]
