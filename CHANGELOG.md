@@ -1,3 +1,9 @@
+## 0.1.16a5 (2022-01-22)
+
+### Fix
+
+- remove updating dependencies after creating app
+
 ## 0.1.16a4 (2022-01-22)
 
 ### Feat
