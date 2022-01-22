@@ -17,3 +17,8 @@ test:
 	@poetry run pytest tests
 
 checks: lint mypy test
+
+new-version:
+	@cz bump --increment PATCH
+	@make publish
+	@git push && git push --tags
