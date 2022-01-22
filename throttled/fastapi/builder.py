@@ -32,6 +32,6 @@ class APILimiter:
             funcs.append(limiter.dispatch)
         return funcs
 
-    def add_middleware(self, app: FastAPI):
+    def inject_middleware_in_app(self, app: FastAPI):
         for middleware in self.middlewares:
             app.add_middleware(BaseHTTPMiddleware, dispatch=middleware)
