@@ -3,7 +3,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.commitizen]
-version = "0.1.10"
+version = "0.1.11"
 tag_format = "$major.$minor.$patch$prerelease"
 update_changelog_on_bump = true
 annotated_tag = true
@@ -42,7 +42,7 @@ disallow_untyped_globals = false
 
 [tool.poetry]
 name = "throttled"
-version = "0.1.10"
+version = "0.1.11"
 description = "A rate limiter for FastAPI"
 authors = ["Vinícius Vargas <santunionivinicius@gmail.com>"]
 readme = "README.md"
