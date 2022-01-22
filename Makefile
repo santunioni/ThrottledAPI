@@ -20,5 +20,5 @@ checks: lint mypy test
 
 new-version:
 	@cz bump --increment PATCH
-	@make publish
+	@make build
 	@git push && git push --tags
