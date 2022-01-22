@@ -1,3 +1,9 @@
+## 0.1.9 (2022-01-22)
+
+### Feat
+
+- fixed window block based on key
+
 ## 0.1.8 (2022-01-22)
 
 ### Fix
