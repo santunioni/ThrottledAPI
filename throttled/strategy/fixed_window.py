@@ -1,18 +1,9 @@
-from abc import ABC, abstractmethod
 from collections import deque
 from typing import Deque, MutableMapping, NamedTuple, Optional
 
 from throttled import Hit, Rate
 from throttled.exceptions import RateLimitExceeded
-
-
-class Strategy(ABC):
-    @abstractmethod
-    def __call__(self, hit: Hit):
-        """
-        :param hit: The hit to be tested
-        :raises: RateLimitExceeded
-        """
+from throttled.strategy.abstract import Strategy
 
 
 class HitsWindow(NamedTuple):

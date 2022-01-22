@@ -1,11 +1,11 @@
 from abc import ABC
-from typing import Callable, Sequence
+from typing import Callable, List, Sequence
 
 from fastapi import Depends
 from starlette.requests import Request
 
 from throttled import Hit
-from throttled.strategies import Strategy
+from throttled.strategy import Strategy
 
 
 class Limiter(ABC):
@@ -25,5 +25,5 @@ class HostBasedLimiter(Limiter):
         self._strategy(hit)
 
 
-def as_dependencies(limiters: Sequence[Callable]) -> Depends:
+def as_dependencies(limiters: Sequence[Callable]) -> List[Depends]:
     return [Depends(limiter) for limiter in limiters]
