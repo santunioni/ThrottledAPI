@@ -34,12 +34,12 @@ class FixedWindowStrategy(Strategy):
 
     def __call__(self, hit: Hit):
         self.__maybe_reset(hit)
-        rate = Rate.from_hits(self.__cache[hit.key].hits)
-        if rate > self.__limit:
+        window = self.__cache[hit.key]
+        if len(window.hits) >= self.__limit.hits:
             raise RateLimitExceeded(
                 hit.key,
                 retry_after=int(
                     self.__limit.interval - self.__get_time_spent_in_window(hit)
                 ),
             )
-        self.__cache[hit.key].hits.append(hit)
+        window.hits.append(hit)
