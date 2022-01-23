@@ -16,14 +16,13 @@ class FastAPILimiterBuilder(StarletteLimiterBuilder):
     def append(self, limiter: Union[Limiter, Middleware]):
         if isinstance(limiter, Middleware) and self.__use_middleware_where_possible:
             super().append(limiter)
-            return
-        if isinstance(limiter, Limiter):
+        elif isinstance(limiter, Limiter):
             if callable(limiter):
                 self.__dependency_limiters.append(limiter)
             else:
-                TypeError(f"Object {limiter} is not Callable.")
-            return
-        raise TypeError(f"Object {limiter} is not a Middleware or Limiter.")
+                raise TypeError(f"Object {limiter} is not Callable.")
+        else:
+            raise TypeError(f"Object {limiter} is not a Middleware or Limiter.")
 
     @property
     def dependencies(self) -> List[Depends]:

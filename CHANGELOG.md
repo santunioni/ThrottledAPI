@@ -1,3 +1,9 @@
+## 0.1.16a14 (2022-01-23)
+
+### Fix
+
+- remove exception being raised improperty in fastapi.builter
+
 ## 0.1.16a13 (2022-01-23)
 
 ### Fix
