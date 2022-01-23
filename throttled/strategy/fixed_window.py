@@ -32,7 +32,7 @@ class FixedWindowStrategy(Strategy):
         if initialized_at > window.initialized_at:
             self.__cache[hit.key] = HitsWindow(initialized_at, deque())
 
-    def __call__(self, hit: Hit):
+    def maybe_block(self, hit: Hit):
         self.__maybe_reset(hit)
         window = self.__cache[hit.key]
         if len(window.hits) >= self.__limit.hits:
