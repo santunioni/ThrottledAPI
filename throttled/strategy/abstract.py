@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from throttled import Hit
+from throttled.models import Hit
 
 
 class Strategy(ABC):

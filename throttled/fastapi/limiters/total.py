@@ -9,4 +9,4 @@ class TotalLimiter(Limiter, Middleware):
         self()
 
     def __call__(self):  # pylint: disable=arguments-differ
-        self._strategy(Hit())
+        self._strategy(Hit(key="total"))

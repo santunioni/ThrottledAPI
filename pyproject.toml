@@ -58,22 +58,21 @@ include = [
 python = "^3.7"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
+pytest-randomly = "^3.11.0"
+pytest-asyncio = "^0.17.2"
+tox = "^3.24.5"
 mypy = "^0.931"
 pylint = "^2.12.2"
 commitizen = "^2.20.4"
 black = "^21.12b0"
 isort = "^5.10.1"
 pre-commit = "^2.16.0"
-pytest = "^6.2.5"
-pytest-cov = "^3.0.0"
 devtools = "^0.8.0"
-tox = "^3.24.5"
-pytest-randomly = "^3.11.0"
 bpython = "^0.22.1"
-pytest-asyncio = "^0.17.2"
 fastapi = "^0.72.0"
 redis = "^4.1.1"
-readme-renderer = "^32.0"
 
 [tool.poetry.extras]
 redis = ["redis"]

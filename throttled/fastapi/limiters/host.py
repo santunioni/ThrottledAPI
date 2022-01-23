@@ -9,5 +9,5 @@ class HostBasedLimiter(Limiter, Middleware):
         self(request)
 
     def __call__(self, request: Request):  # pylint: disable=arguments-differ
-        hit = Hit(key=request.client.host)
+        hit = Hit(key=f"host={request.client.host}")
         self._strategy(hit)

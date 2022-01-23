@@ -1,8 +1,8 @@
 from collections import deque
 from typing import Deque, MutableMapping, NamedTuple, Optional
 
-from throttled import Hit, Rate
 from throttled.exceptions import RateLimitExceeded
+from throttled.models import Hit, Rate
 from throttled.strategy.abstract import Strategy
 
 
