@@ -1,4 +1,3 @@
-import itertools
 from typing import List, Union
 
 from fastapi import Depends
@@ -29,7 +28,10 @@ class APILimiter:
 
     @property
     def middlewares(self) -> List[DispatchFunction]:
-        return list(itertools.chain((catcher_middleware,), self.__middleware_limiters))
+        funcs = [catcher_middleware]
+        for limiter in self.__middleware_limiters:
+            funcs.append(limiter.dispatch)
+        return funcs
 
     def inject_middlewares_in_app(self, app: Starlette):
         for middleware in self.middlewares:
