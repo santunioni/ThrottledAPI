@@ -1,7 +1,6 @@
 from starlette.requests import Request
 
-from throttled import Hit
-from throttled.fastapi.limiters.base import Limiter
+from throttled.limiter import Limiter
 from throttled.starlette.limiters.base import Middleware
 
 
@@ -10,5 +9,4 @@ class HostBasedLimiter(Limiter, Middleware):
         self(request)
 
     def __call__(self, request: Request):  # pylint: disable=arguments-differ
-        hit = Hit(key=f"host={request.client.host}")
-        self._strategy(hit)
+        self.limit(key=f"host={request.client.host}")

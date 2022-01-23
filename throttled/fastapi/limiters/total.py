@@ -1,7 +1,6 @@
 from starlette.requests import Request
 
-from throttled import Hit
-from throttled.fastapi.limiters.base import Limiter
+from throttled.limiter import Limiter
 from throttled.starlette.limiters.base import Middleware
 
 
@@ -10,4 +9,4 @@ class TotalLimiter(Limiter, Middleware):
         self()
 
     def __call__(self):  # pylint: disable=arguments-differ
-        self._strategy(Hit(key="total"))
+        self.limit(key="total")

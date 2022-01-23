@@ -7,7 +7,7 @@ from throttled.starlette.limiters.base import Middleware, catcher_middleware
 
 
 class StarletteLimiterBuilder:
-    def __init__(self):
+    def __init__(self) -> None:
         self.__middleware_limiters: List[Middleware] = []
 
     def append(self, limiter: Middleware):
