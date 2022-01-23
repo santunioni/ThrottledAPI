@@ -16,7 +16,7 @@ class Limiter:
         self.__strategy.maybe_block(Hit(key=key))
 
     def decorate(self, func: FuncT) -> FuncT:
-        key = func.__qualname__
+        key = f"func_name={func.__name__}:func_hash={hash(func)}"
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
