@@ -22,6 +22,7 @@ class FastAPILimiterBuilder(StarletteLimiterBuilder):
                 self.__dependency_limiters.append(limiter)
             else:
                 TypeError(f"Object {limiter} is not Callable.")
+            return
         raise TypeError(f"Object {limiter} is not a Middleware or Limiter.")
 
     @property
