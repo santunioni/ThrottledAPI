@@ -1,7 +1,8 @@
 from starlette.requests import Request
 
 from throttled import Hit
-from throttled.fastapi.limiters.base import Limiter, Middleware
+from throttled.fastapi.limiters.base import Limiter
+from throttled.starlette.limiters.base import Middleware
 
 
 class HostBasedLimiter(Limiter, Middleware):

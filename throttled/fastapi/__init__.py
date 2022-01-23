@@ -1,4 +1,4 @@
-from .builder import APILimiter
-from .limiters import HostBasedLimiter, Limiter, Middleware, TotalLimiter
+from .builder import FastAPILimiterBuilder
+from .limiters import HostBasedLimiter, Limiter, TotalLimiter
 
-__all__ = ["Middleware", "TotalLimiter", "HostBasedLimiter", "Limiter", "APILimiter"]
+__all__ = ["TotalLimiter", "HostBasedLimiter", "Limiter", "FastAPILimiterBuilder"]
