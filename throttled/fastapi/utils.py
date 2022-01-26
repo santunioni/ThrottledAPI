@@ -1,7 +1,6 @@
-from typing import Callable, List, Tuple, Union
+from typing import List, Tuple, Type, Union
 
 from fastapi import Depends
-from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware, DispatchFunction
 
 from throttled.limiter import Limiter
@@ -9,9 +8,13 @@ from throttled.limiter import Limiter
 from .base import Middleware, catcher_middleware
 
 
+def _create_middleware(dispatch: DispatchFunction) -> Type[BaseHTTPMiddleware]:
+    return type("MyLimiterMiddleware", (BaseHTTPMiddleware,), {"dispatch": dispatch})  # type: ignore
+
+
 def split_dependencies_and_middlewares(
     *limiters: Union[Limiter, Middleware], include_catcher: bool = True
-) -> Tuple[List[Depends], List[Callable[[Starlette], BaseHTTPMiddleware]]]:
+) -> Tuple[List[Depends], List[Type]]:
 
     dispatch_functions: List[DispatchFunction] = []
     if include_catcher:
@@ -28,6 +31,4 @@ def split_dependencies_and_middlewares(
                 raise TypeError(f"Object {limiter} is not Callable.")
         else:
             raise TypeError(f"Object {limiter} is not a Middleware or Limiter.")
-    return dependencies, [
-        lambda app: BaseHTTPMiddleware(app, dispatch=df) for df in dispatch_functions
-    ]
+    return dependencies, list(map(_create_middleware, dispatch_functions))
