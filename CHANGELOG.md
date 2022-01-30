@@ -1,3 +1,13 @@
+## 0.1.16a18 (2022-01-30)
+
+### Feat
+
+- implement moving window for memory storage
+
+### Perf
+
+- optimize fixed window strategy
+
 ## 0.1.16a17 (2022-01-25)
 
 ## 0.1.16a16 (2022-01-25)
