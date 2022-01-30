@@ -3,9 +3,8 @@ from typing import Callable, Mapping, MutableMapping, Type
 from throttled.models import Hit
 from throttled.storage.base import Storage
 from throttled.storage.memory.window import MemoryWindow
+from throttled.strategy import FixedWindowStrategy, MovingWindowStrategy
 from throttled.strategy.base import Strategy
-from throttled.strategy.fixed_window import FixedWindowStrategy
-from throttled.strategy.moving_window import MovingWindowStrategy
 
 
 def _fixed_window_duration_calc(hit_time: float, interval: float) -> float:
@@ -17,7 +16,7 @@ def _moving_window_duration_calc(_: float, interval: float) -> float:
 
 
 _DurationCalcType = Callable[[float, float], float]
-DURATION_CALC_FUNCTIONS: Mapping[Type[Strategy], _DurationCalcType] = {
+DURATION_CALC: Mapping[Type[Strategy], _DurationCalcType] = {
     FixedWindowStrategy: _fixed_window_duration_calc,
     MovingWindowStrategy: _moving_window_duration_calc,
 }

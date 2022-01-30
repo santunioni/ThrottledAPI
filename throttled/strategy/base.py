@@ -1,29 +1,35 @@
 from abc import ABC, abstractmethod
 
+from throttled.exceptions import RateLimitExceeded
 from throttled.models import Hit, Rate
 from throttled.storage.base import Storage
 
 
-class Strategy(ABC):
-    __slots__ = ("__limit", "_storage")
+class StorageFactory(ABC):
+    @abstractmethod
+    def get_storage_for_strategy(self, strategy: "Strategy") -> Storage:
+        ...
 
-    def __init__(self, limit: Rate, storage_factory: "StorageFactory"):
+
+class Strategy(ABC):
+    __slots__ = ("__limit", "__storage")
+
+    def __init__(self, limit: Rate, storage_factory: StorageFactory):
         self.__limit = limit
-        self._storage = storage_factory.get_storage_for_strategy(self)
+        self.__storage = storage_factory.get_storage_for_strategy(self)
 
     @property
     def limit(self) -> Rate:
         return self.__limit
 
-    @abstractmethod
     def maybe_block(self, hit: Hit):
         """
         :param hit: The hit to be tested
         :raises: RateLimitExceeded
         """
-
-
-class StorageFactory(ABC):
-    @abstractmethod
-    def get_storage_for_strategy(self, strategy: Strategy) -> Storage:
-        ...
+        window = self.__storage.get_current_window(hit)
+        if window.incr(hit.cost) >= self.limit.hits:
+            raise RateLimitExceeded(
+                hit.key,
+                retry_after=window.get_remaining_seconds(),
+            )

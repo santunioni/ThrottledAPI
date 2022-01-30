@@ -1,4 +1,4 @@
-from throttled.storage.memory.storage import DURATION_CALC_FUNCTIONS, MemoryStorage
+from throttled.storage.memory.storage import DURATION_CALC, MemoryStorage
 from throttled.strategy.base import StorageFactory, Strategy
 
 
@@ -7,7 +7,7 @@ class MemoryStorageFactory(StorageFactory):
         try:
             return MemoryStorage(
                 interval=strategy.limit.interval,
-                duration_calc=DURATION_CALC_FUNCTIONS[type(strategy)],
+                duration_calc=DURATION_CALC[type(strategy)],
             )
         except KeyError as err:
             raise TypeError(
