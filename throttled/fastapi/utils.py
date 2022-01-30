@@ -11,7 +11,6 @@ from .base import Middleware, catcher_middleware
 def split_dependencies_and_middlewares(
     *limiters: Union[Limiter, Middleware], include_catcher: bool = True
 ) -> Tuple[List[Depends], List[DispatchFunction]]:
-
     dispatch_functions: List[DispatchFunction] = []
     if include_catcher:
         dispatch_functions.append(catcher_middleware)

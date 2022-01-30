@@ -73,6 +73,8 @@ devtools = "^0.8.0"
 bpython = "^0.22.1"
 fastapi = "^0.72.0"
 redis = "^4.1.1"
+pytest-pylint = "^0.18.0"
+pylint-pytest = "^1.1.2"
 
 [tool.poetry.extras]
 redis = ["redis"]

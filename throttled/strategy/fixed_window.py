@@ -1,45 +1,42 @@
-from collections import deque
-from typing import Deque, MutableMapping, NamedTuple, Optional
+from typing import MutableMapping, NamedTuple
 
 from throttled.exceptions import RateLimitExceeded
 from throttled.models import Hit, Rate
-from throttled.strategy.abstract import Strategy
+from throttled.strategy.base import Strategy
 
 
-class HitsWindow(NamedTuple):
+class HitsCounter(NamedTuple):
     initialized_at: float
-    hits: Deque[Hit]
+    hits: int
 
 
 class FixedWindowStrategy(Strategy):
-    def __init__(
-        self, limit: Rate, cache: Optional[MutableMapping[str, HitsWindow]] = None
-    ):
-        self.__limit = limit
-        self.__cache: MutableMapping[str, HitsWindow] = cache or {}
+    def __init__(self, limit: Rate):
+        self.limit = limit
+        self.__cache: MutableMapping[str, HitsCounter] = {}
 
     def __get_time_spent_in_window(self, hit: Hit) -> float:
-        return hit.time % self.__limit.interval
+        return hit.time % self.limit.interval
 
     def __maybe_reset(self, hit: Hit):
         initialized_at = hit.time - self.__get_time_spent_in_window(hit)
 
         if hit.key not in self.__cache:
-            self.__cache[hit.key] = HitsWindow(initialized_at, deque())
+            self.__cache[hit.key] = HitsCounter(initialized_at, 0)
             return
 
         window = self.__cache[hit.key]
         if initialized_at > window.initialized_at:
-            self.__cache[hit.key] = HitsWindow(initialized_at, deque())
+            self.__cache[hit.key] = HitsCounter(initialized_at, 0)
 
     def maybe_block(self, hit: Hit):
         self.__maybe_reset(hit)
-        window = self.__cache[hit.key]
-        if len(window.hits) >= self.__limit.hits:
+        counter = self.__cache[hit.key]
+        if counter.hits >= self.limit.hits:
             raise RateLimitExceeded(
                 hit.key,
                 retry_after=int(
-                    self.__limit.interval - self.__get_time_spent_in_window(hit)
+                    self.limit.interval - self.__get_time_spent_in_window(hit)
                 ),
             )
-        window.hits.append(hit)
+        counter.hits += hit.cost
