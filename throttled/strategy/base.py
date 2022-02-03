@@ -14,7 +14,7 @@ class StorageFactory(ABC):
 class Strategy:
     __slots__ = ("__limit", "__storage")
 
-    def __init__(self, limit: Rate, storage_factory: StorageFactory, limiter):
+    def __init__(self, limit: Rate, storage_factory: StorageFactory):
         self.__limit = limit
         self.__storage = storage_factory.get_storage_for_strategy(self)
 
