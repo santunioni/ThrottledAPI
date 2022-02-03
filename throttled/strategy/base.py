@@ -11,10 +11,10 @@ class StorageFactory(ABC):
         ...
 
 
-class Strategy(ABC):
+class Strategy:
     __slots__ = ("__limit", "__storage")
 
-    def __init__(self, limit: Rate, storage_factory: StorageFactory):
+    def __init__(self, limit: Rate, storage_factory: StorageFactory, limiter):
         self.__limit = limit
         self.__storage = storage_factory.get_storage_for_strategy(self)
 
@@ -28,7 +28,7 @@ class Strategy(ABC):
         :raises: RateLimitExceeded
         """
         window = self.__storage.get_current_window(hit)
-        if window.incr(hit.cost) >= self.limit.hits:
+        if window.incr(hit.cost) > self.limit.hits:
             raise RateLimitExceeded(
                 hit.key,
                 retry_after=window.get_remaining_seconds(),

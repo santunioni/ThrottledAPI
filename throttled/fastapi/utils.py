@@ -5,19 +5,17 @@ from starlette.middleware.base import DispatchFunction
 
 from throttled.limiter import Limiter
 
-from .base import Middleware, catcher_middleware
+from .base import FastAPILimiter, FastAPIRequestLimiter
 
 
 def split_dependencies_and_middlewares(
-    *limiters: Union[Limiter, Middleware], include_catcher: bool = True
+    *limiters: Union[FastAPILimiter, FastAPIRequestLimiter]
 ) -> Tuple[List[Depends], List[DispatchFunction]]:
     dispatch_functions: List[DispatchFunction] = []
-    if include_catcher:
-        dispatch_functions.append(catcher_middleware)
 
     dependencies: List[Depends] = []
     for limiter in limiters:
-        if isinstance(limiter, Middleware):
+        if isinstance(limiter, FastAPIRequestLimiter):
             dispatch_functions.append(limiter.dispatch)
         elif isinstance(limiter, Limiter):
             if callable(limiter):

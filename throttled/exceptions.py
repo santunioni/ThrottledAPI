@@ -6,3 +6,7 @@ class RateLimitExceeded(Exception):
         self.key = key
         self.retry_after = retry_after
         super().__init__()
+
+    @property
+    def detail(self) -> str:
+        return f"Rate exceeded for key={self.key}."
