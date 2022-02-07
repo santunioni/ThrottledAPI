@@ -7,7 +7,7 @@ from throttled.storage.base import Storage
 
 class StorageFactory(ABC):
     @abstractmethod
-    def get_storage_for_strategy(self, strategy: "Strategy") -> Storage:
+    def get_storage_for_strategy(self, strategy: "Strategy", limit: Rate) -> Storage:
         ...
 
 
@@ -16,11 +16,7 @@ class Strategy:
 
     def __init__(self, limit: Rate, storage_factory: StorageFactory):
         self.__limit = limit
-        self.__storage = storage_factory.get_storage_for_strategy(self)
-
-    @property
-    def limit(self) -> Rate:
-        return self.__limit
+        self.__storage = storage_factory.get_storage_for_strategy(self, limit)
 
     def maybe_block(self, hit: Hit):
         """
@@ -28,7 +24,7 @@ class Strategy:
         :raises: RateLimitExceeded
         """
         window = self.__storage.get_current_window(hit)
-        if window.incr(hit.cost) > self.limit.hits:
+        if window.incr(hit.cost) > self.__limit.hits:
             raise RateLimitExceeded(
                 hit.key,
                 retry_after=window.get_remaining_seconds(),
