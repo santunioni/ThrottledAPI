@@ -1,3 +1,9 @@
+## 0.1.16a24 (2022-02-07)
+
+### Fix
+
+- add cast to str in exc.retry_after
+
 ## 0.1.16a23 (2022-02-07)
 
 ### Fix
