@@ -8,7 +8,7 @@ from throttled.strategy.base import Strategy
 
 
 def _fixed_window_duration_calc(hit_time: float, interval: float) -> float:
-    return hit_time - hit_time % interval + interval
+    return interval - hit_time % interval
 
 
 def _moving_window_duration_calc(_: float, interval: float) -> float:
