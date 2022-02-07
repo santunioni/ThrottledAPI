@@ -1,3 +1,9 @@
+## 0.1.16a23 (2022-02-07)
+
+### Fix
+
+- check if FastAPILimiter instead of Limiter
+
 ## 0.1.16a21 (2022-02-07)
 
 ## 0.1.16a20 (2022-02-03)
