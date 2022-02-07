@@ -12,13 +12,22 @@ from throttled.limiter import Limiter
 from throttled.strategy.base import Strategy
 
 
+def _cast_retry_after(number: float) -> str:
+    """
+    Cast the retry-after number to appropriate format to be included in http headers.
+    :param number: the retry-after float number
+    :return: the number after cast
+    """
+    return str(round(number, 3))
+
+
 class HTTPLimitExceeded(HTTPException):
     def __init__(self, exc: RateLimitExceeded):
         self.retry_after = exc.retry_after
         if self.retry_after is None:
             headers = {}
         else:
-            headers = {"Retry-After": str(self.retry_after)}
+            headers = {"Retry-After": _cast_retry_after(self.retry_after)}
         super().__init__(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=exc.detail,
@@ -32,7 +41,7 @@ def response_from_exception(
     return Response(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         content=exc.detail,
-        headers={"Retry-After": str(exc.retry_after)},
+        headers={"Retry-After": _cast_retry_after(exc.retry_after)},
     )
 
 
