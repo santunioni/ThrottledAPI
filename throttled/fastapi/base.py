@@ -18,7 +18,7 @@ class HTTPLimitExceeded(HTTPException):
         if self.retry_after is None:
             headers = {}
         else:
-            headers = {"Retry-After": self.retry_after}
+            headers = {"Retry-After": str(self.retry_after)}
         super().__init__(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=exc.detail,
@@ -32,7 +32,7 @@ def response_from_exception(
     return Response(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         content=exc.detail,
-        headers={"Retry-After": exc.retry_after},
+        headers={"Retry-After": str(exc.retry_after)},
     )
 
 
