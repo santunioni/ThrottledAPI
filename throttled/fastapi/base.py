@@ -37,6 +37,8 @@ def response_from_exception(
 
 
 class FastAPILimiter:
+    """First adapter between limiters APIs and FastAPI"""
+
     def __init__(self, strategy: Strategy):
         self.__limiter = Limiter(strategy)
 
