@@ -3,7 +3,7 @@ import functools
 from typing import Any, Callable, TypeVar
 
 from throttled.models import Hit
-from throttled.strategy import Strategy
+from throttled.strategy.base import Strategy
 
 FuncT = TypeVar("FuncT", bound=Callable[..., Any])
 
@@ -16,7 +16,7 @@ class Limiter:
         self.__strategy.maybe_block(Hit(key=key))
 
     def decorate(self, func: FuncT) -> FuncT:
-        key = f"func_name={func.__name__}:func_hash={hash(func)}"
+        key = f"func={func.__name__}:hash={hash(func)}"
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
