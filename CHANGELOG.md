@@ -1,3 +1,10 @@
+## 0.1.16a25 (2022-02-07)
+
+### Fix
+
+- cast retry-after http header
+- window duration in fixed window strategy for memory storage
+
 ## 0.1.16a24 (2022-02-07)
 
 ### Fix
