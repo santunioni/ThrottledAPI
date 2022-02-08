@@ -18,7 +18,7 @@ class HTTPLimitExceeded(HTTPException):
         if self.retry_after is None:
             headers = {}
         else:
-            headers = {"Retry-After": str(round(self.retry_after))}
+            headers = {"Retry-After": str(round(self.retry_after, 2))}
 
         super_kwargs = dict(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS, headers=headers
