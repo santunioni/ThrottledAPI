@@ -1,18 +1,10 @@
 import time
-from typing import Callable, Mapping, MutableMapping, Optional, Type
+from typing import MutableMapping, Optional
 
 from throttled.models import Hit, Rate
+from throttled.storage._duration_funcs import DURATION_FUNCTIONS, DurationCalcType
 from throttled.storage.abstract import HitsWindow, WindowManager
-from throttled.strategy import FixedWindowStrategy, MovingWindowStrategy
 from throttled.strategy.base import Storage, Strategy
-
-
-def _fixed_window_duration_calc(hit_time: float, interval: float) -> float:
-    return interval - hit_time % interval
-
-
-def _moving_window_duration_calc(_: float, interval: float) -> float:
-    return interval
 
 
 class _MemoryWindow(HitsWindow):
@@ -35,16 +27,13 @@ class _MemoryWindow(HitsWindow):
         return self.__expire_at - time.time()
 
 
-_DurationCalcType = Callable[[float, float], float]
-
-
 class _MemoryWindowManager(WindowManager):
     __slots__ = ("__interval", "__cache", "__duration_calc")
 
     def __init__(
         self,
         interval: float,
-        duration_func: _DurationCalcType,
+        duration_func: DurationCalcType,
         cache: Optional[MutableMapping[str, _MemoryWindow]] = None,
     ):
         self.__cache: MutableMapping[str, _MemoryWindow] = (
@@ -62,12 +51,6 @@ class _MemoryWindowManager(WindowManager):
         return window
 
 
-_DURATION_FUNCTIONS: Mapping[Type[Strategy], _DurationCalcType] = {
-    FixedWindowStrategy: _fixed_window_duration_calc,
-    MovingWindowStrategy: _moving_window_duration_calc,
-}
-
-
 class MemoryStorage(Storage):
     def __init__(
         self,
@@ -76,19 +59,13 @@ class MemoryStorage(Storage):
         self.__cache = cache
 
     def get_window_manager(
-        self, strategy: Type[Strategy], limit: Rate
+        self, strategy: Strategy, limit: Rate
     ) -> _MemoryWindowManager:
-        try:
-            return _MemoryWindowManager(
-                interval=limit.interval,
-                duration_func=_DURATION_FUNCTIONS[strategy.__class__],
-                cache=self.__cache,
-            )
-        except KeyError as err:
-            raise TypeError(
-                f"There is not MemoryStorage for strategy {strategy} implemented yet! "
-                f"Strategy options are: {', '.join(map(str, _DURATION_FUNCTIONS.keys()))}."
-            ) from err
+        return _MemoryWindowManager(
+            interval=limit.interval,
+            duration_func=DURATION_FUNCTIONS[strategy.__class__],
+            cache=self.__cache,
+        )
 
 
 __all__ = ["MemoryStorage"]
