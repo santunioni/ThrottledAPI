@@ -14,7 +14,7 @@ def moving_window_duration_calc(_: float, interval: float) -> float:
     return interval
 
 
-DURATION_FUNCTIONS: Mapping[Type[Strategy], DurationCalcType] = {
+DUR_REGISTRY: Mapping[Type[Strategy], DurationCalcType] = {
     FixedWindowStrategy: fixed_window_duration_calc,
     MovingWindowStrategy: moving_window_duration_calc,
 }

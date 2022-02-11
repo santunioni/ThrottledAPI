@@ -1,13 +1,19 @@
+"""
+This module defines in-memory storage for WindowManager's
+"""
+
+
 import time
 from typing import MutableMapping, Optional
 
 from throttled.models import Hit, Rate
-from throttled.storage._duration_funcs import DURATION_FUNCTIONS, DurationCalcType
-from throttled.storage.abstract import HitsWindow, WindowManager
-from throttled.strategy.base import Storage, Strategy
+from throttled.storage import BaseStorage
+from throttled.storage._abstract import _HitsWindow, _WindowManager
+from throttled.storage._duration import DUR_REGISTRY, DurationCalcType
+from throttled.strategy.base import Strategy
 
 
-class _MemoryWindow(HitsWindow):
+class _MemoryWindow(_HitsWindow):
     __slots__ = ("__expire_at", "__hits")
 
     def __init__(self, duration: float):
@@ -27,7 +33,7 @@ class _MemoryWindow(HitsWindow):
         return self.__expire_at - time.time()
 
 
-class _MemoryWindowManager(WindowManager):
+class _MemoryWindowManager(_WindowManager):
     __slots__ = ("__interval", "__cache", "__duration_calc")
 
     def __init__(
@@ -51,7 +57,7 @@ class _MemoryWindowManager(WindowManager):
         return window
 
 
-class MemoryStorage(Storage):
+class MemoryStorage(BaseStorage):
     def __init__(
         self,
         cache: Optional[MutableMapping[str, _MemoryWindow]] = None,
@@ -63,7 +69,7 @@ class MemoryStorage(Storage):
     ) -> _MemoryWindowManager:
         return _MemoryWindowManager(
             interval=limit.interval,
-            duration_func=DURATION_FUNCTIONS[strategy.__class__],
+            duration_func=DUR_REGISTRY[strategy.__class__],
             cache=self.__cache,
         )
 

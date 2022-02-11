@@ -1,12 +1,17 @@
+"""
+This module defines redis storage for WindowManager's
+"""
+
 from redis.client import Redis
 
 from throttled.models import Hit, Rate
-from throttled.storage._duration_funcs import DURATION_FUNCTIONS, DurationCalcType
-from throttled.storage.abstract import HitsWindow, WindowManager
-from throttled.strategy.base import Storage, Strategy
+from throttled.storage import BaseStorage
+from throttled.storage._abstract import _HitsWindow, _WindowManager
+from throttled.storage._duration import DUR_REGISTRY, DurationCalcType
+from throttled.strategy.base import Strategy
 
 
-class _RedisWindow(HitsWindow):
+class _RedisWindow(_HitsWindow):
     __slots__ = ("__client", "__interval", "__key", "__duration_calc")
 
     def __init__(
@@ -35,7 +40,7 @@ class _RedisWindow(HitsWindow):
         return self.__client.pttl(name=self.__hit.key) / 1000
 
 
-class _RedisWindowManager(WindowManager):
+class _RedisWindowManager(_WindowManager):
     __slots__ = ("__interval", "__client", "__duration_calc")
 
     def __init__(self, interval: int, client: Redis, duration_func: DurationCalcType):
@@ -52,7 +57,7 @@ class _RedisWindowManager(WindowManager):
         )
 
 
-class RedisStorage(Storage):
+class RedisStorage(BaseStorage):
     def __init__(
         self,
         client: Redis,
@@ -64,7 +69,7 @@ class RedisStorage(Storage):
     ) -> _RedisWindowManager:
         return _RedisWindowManager(
             interval=int(limit.interval),
-            duration_func=DURATION_FUNCTIONS[strategy.__class__],
+            duration_func=DUR_REGISTRY[strategy.__class__],
             client=self.__client,
         )
 

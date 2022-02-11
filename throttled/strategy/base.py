@@ -1,12 +1,12 @@
 from throttled.exceptions import RateLimitExceeded
 from throttled.models import Hit, Rate
-from throttled.storage.abstract import Storage
+from throttled.storage import BaseStorage
 
 
 class Strategy:
     __slots__ = ("__limit", "__window_manager")
 
-    def __init__(self, limit: Rate, storage: Storage):
+    def __init__(self, limit: Rate, storage: BaseStorage):
         self.__limit = limit
         self.__window_manager = storage.get_window_manager(strategy=self, limit=limit)
 
