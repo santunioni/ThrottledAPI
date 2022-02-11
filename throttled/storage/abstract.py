@@ -12,6 +12,13 @@ class HitsWindow(ABC):
     def incr(self, hits: int = 1) -> int:
         ...
 
+    @abstractmethod
+    def decr(self, hits: int = 1) -> int:
+        ...
+
+    def is_expired(self) -> bool:
+        return self.get_remaining_seconds() < 0
+
 
 class WindowManager(ABC):
     @abstractmethod

@@ -15,13 +15,6 @@ def _moving_window_duration_calc(_: float, interval: float) -> float:
     return interval
 
 
-_DurationCalcType = Callable[[float, float], float]
-_DURATION_FUNCTIONS: Mapping[Type[Strategy], _DurationCalcType] = {
-    FixedWindowStrategy: _fixed_window_duration_calc,
-    MovingWindowStrategy: _moving_window_duration_calc,
-}
-
-
 class _MemoryWindow(HitsWindow):
     __slots__ = ("__expire_at", "__hits")
 
@@ -34,8 +27,15 @@ class _MemoryWindow(HitsWindow):
         self.__hits += hits
         return self.__hits
 
+    def decr(self, hits: int = 1) -> int:
+        self.__hits -= hits
+        return self.__hits
+
     def get_remaining_seconds(self) -> float:
         return self.__expire_at - time.time()
+
+
+_DurationCalcType = Callable[[float, float], float]
 
 
 class _MemoryWindowManager(WindowManager):
@@ -55,11 +55,17 @@ class _MemoryWindowManager(WindowManager):
 
     def get_current_window(self, hit: Hit) -> _MemoryWindow:
         window = self.__cache.get(hit.key)
-        if window is None or window.get_remaining_seconds() < 0:
+        if window is None or window.is_expired():
             self.__cache[hit.key] = window = _MemoryWindow(
                 duration=self.__duration_calc(hit.time, self.__interval)
             )
         return window
+
+
+_DURATION_FUNCTIONS: Mapping[Type[Strategy], _DurationCalcType] = {
+    FixedWindowStrategy: _fixed_window_duration_calc,
+    MovingWindowStrategy: _moving_window_duration_calc,
+}
 
 
 class MemoryStorage(Storage):
