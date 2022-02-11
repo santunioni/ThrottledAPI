@@ -8,9 +8,7 @@ class Strategy:
 
     def __init__(self, limit: Rate, storage: Storage):
         self.__limit = limit
-        self.__window_manager = storage.get_window_manager(
-            owner=self.__class__, limit=limit
-        )
+        self.__window_manager = storage.get_window_manager(strategy=self, limit=limit)
 
     def maybe_block(self, hit: Hit):
         """

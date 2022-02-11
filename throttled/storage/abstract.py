@@ -3,12 +3,6 @@ from abc import ABC, abstractmethod
 from throttled.models import Hit, Rate
 
 
-class Storage(ABC):
-    @abstractmethod
-    def get_window_manager(self, owner: object, limit: Rate) -> "WindowManager":
-        ...
-
-
 class HitsWindow(ABC):
     @abstractmethod
     def get_remaining_seconds(self) -> int:
@@ -22,4 +16,10 @@ class HitsWindow(ABC):
 class WindowManager(ABC):
     @abstractmethod
     def get_current_window(self, hit: Hit) -> HitsWindow:
+        ...
+
+
+class Storage(ABC):
+    @abstractmethod
+    def get_window_manager(self, strategy: object, limit: Rate) -> WindowManager:
         ...

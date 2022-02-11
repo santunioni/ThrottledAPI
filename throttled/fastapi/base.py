@@ -39,7 +39,7 @@ def null_detail_factory(_: RateLimitExceeded) -> None:
     return None
 
 
-class FastAPILimiter:
+class FastAPILimiter(ABC):
     """First adapter between limiters APIs and FastAPI"""
 
     def __init__(
@@ -51,10 +51,26 @@ class FastAPILimiter:
         self.__detail_factory = detail_factory
 
     def limit(self, key: str):
+        """
+        Limit the hit based on it's key
+
+        :param key: the key to be limited.
+        :raises: HTTPLimitExceeded
+        """
         try:
             self.__limiter.limit(key)
         except RateLimitExceeded as exc:
             raise HTTPLimitExceeded(exc, detail=self.__detail_factory(exc)) from exc
+
+    @abstractmethod
+    def __call__(self, request: Request):
+        """
+        This method implementation are supposed to call the limit() method with
+        the key to be limited.
+
+        :param request: injected by FastAPI when using the limiter as dependency.
+        :raises: HTTPLimitExceeded
+        """
 
 
 ResponseFactory = Callable[[HTTPLimitExceeded], Response]
@@ -67,15 +83,16 @@ def default_response_factory(exc: HTTPLimitExceeded) -> Response:
     )
 
 
-class FastAPIRequestLimiter(ABC, FastAPILimiter):
+class MiddlewareLimiter(FastAPILimiter, ABC):
     __ignored_paths: Sequence[str] = ("docs", "redoc", "favicon.ico", "openapi.json")
 
     def __init__(
         self,
         strategy: Strategy,
+        detail_factory: DetailFactory = key_detail_factory,
         response_factory: ResponseFactory = default_response_factory,
     ):
-        super().__init__(strategy)
+        super().__init__(strategy=strategy, detail_factory=detail_factory)
         self.__response_factory = response_factory
 
     def ignore_path(self, path: str):
@@ -86,6 +103,15 @@ class FastAPIRequestLimiter(ABC, FastAPILimiter):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        """
+        Dispatch function which converts the limiter in a Middleware.
+        Middlewares are faster because they don't need dependencies to be resolved.
+
+        All limiters that don't use FastAPI dependency injection can be implemented as Middleware.
+
+        :param request: injected by FastAPI when using the limiter as middleware.
+        :param call_next: the next middleware from the chain-of-responsibility created by Starlette.
+        """
         try:
             path = str(request.url).replace(str(request.base_url), "")
             if path not in self.__ignored_paths:
@@ -93,7 +119,3 @@ class FastAPIRequestLimiter(ABC, FastAPILimiter):
             return await call_next(request)
         except HTTPLimitExceeded as exc:
             return self.__response_factory(exc)
-
-    @abstractmethod
-    def __call__(self, request: Request):
-        ...

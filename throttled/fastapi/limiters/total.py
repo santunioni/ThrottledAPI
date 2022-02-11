@@ -1,8 +1,8 @@
 from starlette.requests import Request
 
-from ..base import FastAPIRequestLimiter
+from ..base import MiddlewareLimiter
 
 
-class TotalLimiter(FastAPIRequestLimiter):
+class TotalLimiter(MiddlewareLimiter):
     def __call__(self, request: Request):
         self.limit(key="total")
