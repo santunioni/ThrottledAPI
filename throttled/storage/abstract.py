@@ -17,7 +17,7 @@ class HitsWindow(ABC):
         ...
 
     def is_expired(self) -> bool:
-        return self.get_remaining_seconds() < 0
+        return self.get_remaining_seconds() <= 0
 
 
 class WindowManager(ABC):
