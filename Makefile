@@ -1,8 +1,8 @@
 lint:
 	@poetry run isort .
 	@poetry run black .
-	@poetry run pylint throttled
-	@poetry run pylint tests
+	@poetry run pylint --rcfile=.pylint.cfg throttled
+	@poetry run pylint --rcfile=.pylint.cfg tests
 
 mypy:
 	@poetry run mypy .
