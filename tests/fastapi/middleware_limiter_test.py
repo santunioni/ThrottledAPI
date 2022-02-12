@@ -5,6 +5,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient
 
 from throttled.fastapi import IPLimiter, MiddlewareLimiter, TotalLimiter
+from throttled.fastapi.base import null_detail_factory
 from throttled.storage.memory import MemoryStorage
 from throttled.strategies import Strategies
 
@@ -23,7 +24,9 @@ def app() -> FastAPI:
 @pytest.fixture(params=[IPLimiter, TotalLimiter])
 def middleware_limiter(request, limit) -> MiddlewareLimiter:
     return request.param(
-        limit=limit, storage=MemoryStorage(), strategy=Strategies.MOVING_WINDOW
+        limit=limit,
+        storage=MemoryStorage(),
+        strategy=Strategies.MOVING_WINDOW,
     )
 
 
@@ -46,15 +49,24 @@ def test_middleware_should_limit_next_request(app, limit, middleware_limiter, co
     )
 
 
-def test_middleware_should_ignore_ignored_path(
-    app, limit, middleware_limiter, comparer
-):
-    middleware_limiter.ignore_path("/there")
+def test_middleware_should_ignore_ignored_path(app, limit, comparer):
+    limiter = IPLimiter(
+        limit=limit,
+        storage=MemoryStorage(),
+        strategy=Strategies.MOVING_WINDOW,
+        detail_factory=null_detail_factory,
+    )
+    limiter.ignore_path("/there")
     app.add_middleware(
         BaseHTTPMiddleware,
-        dispatch=middleware_limiter.dispatch,
+        dispatch=limiter.dispatch,
     )
     client = TestClient(app)
 
     for _ in range(2 * limit.hits):
         assert client.get("/there").json() == "Hello there"
+
+    for _ in range(limit.hits):
+        assert client.get("/vini").content == b'"Hello vini"'
+    for _ in range(limit.hits):
+        assert client.get("/vini").content == b""
