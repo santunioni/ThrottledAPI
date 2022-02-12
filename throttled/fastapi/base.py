@@ -17,13 +17,9 @@ from throttled.strategies import Strategies
 class HTTPLimitExceeded(HTTPException):
     def __init__(self, exc: RateLimitExceeded, detail: Optional[str] = None):
         self.retry_after = exc.retry_after
-        if self.retry_after is None:
-            headers = {}
-        else:
-            headers = {"Retry-After": str(round(self.retry_after, 2))}
-
         super_kwargs = dict(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS, headers=headers
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            headers={"Retry-After": str(round(self.retry_after, 2))},
         )
         if detail is not None:
             super_kwargs["detail"] = detail
