@@ -105,7 +105,7 @@ addopts = "--cov-report html:coverage --cov-report term --cov=throttled"
 legacy_tox_ini = """
 [tox]
 isolated_build = True
-envlist = py38,py39,py310
+envlist = py37,py38,py39,py310
 [tox:.package]
 basepython = python3
 
@@ -113,5 +113,10 @@ basepython = python3
 deps = pytest
        pytest-randomly
        pytest-cov
+       pytest-asyncio
+       redis
+       redislite
+       fastapi
+       requests
 commands = pytest tests
 """
