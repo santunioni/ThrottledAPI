@@ -17,10 +17,7 @@ def split_dependencies_and_middlewares(
         if isinstance(limiter, MiddlewareLimiter):
             dispatch_functions.append(limiter.dispatch)
         elif isinstance(limiter, FastAPILimiter):
-            if callable(limiter):
-                dependencies.append(Depends(limiter))
-            else:
-                raise TypeError(f"Object {limiter} is not Callable.")
+            dependencies.append(Depends(limiter))
         else:
             raise TypeError(f"Object {limiter} is not a Middleware or Limiter.")
     return dependencies, dispatch_functions

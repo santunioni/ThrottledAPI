@@ -32,8 +32,12 @@ class _RedisWindow(_HitsWindow):
         return value
 
     def decr(self, hits: int = 1) -> int:
+        """
+        To be implemented:
+
         value = self.__client.decrby(name=self.__hit.key, amount=hits)
         return value
+        """
 
     def get_remaining_seconds(self) -> float:
         return self.__client.pttl(name=self.__hit.key) * 1e-3
