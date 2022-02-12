@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from tests.utils_test import NumbersComparer
+from tests.conftest import NumbersComparer
 from throttled.exceptions import RateLimitExceeded
 from throttled.strategies import Strategies
 

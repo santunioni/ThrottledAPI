@@ -1,3 +1,5 @@
+from math import tanh
+
 import pytest
 import redislite
 
@@ -36,3 +38,25 @@ def limiter_for(storage, limit):
 @pytest.fixture(params=Strategies)
 def limiter(limiter_for, request):
     return limiter_for(request.param)
+
+
+class NumbersComparer:
+    __slots__ = ("__error",)
+
+    def __init__(self, error: float = 1e-2):
+        self.__error = error
+
+    def almost_equals(self, retry_after: float, interval: float) -> bool:
+        """Checks if two numbers are almost equal, given an error."""
+        return abs(retry_after - interval) <= self.__error
+
+
+@pytest.fixture
+def comparer(limit) -> NumbersComparer:
+    """
+    Error tolerance
+    From 5% for larger intervals to 15% for smaller intervals.
+
+    :return: Error tolerance when comparing numbers
+    """
+    return NumbersComparer(error=limit.interval * (0.15 - 0.10 * tanh(limit.interval)))
