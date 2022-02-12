@@ -103,6 +103,7 @@ class MiddlewareLimiter(FastAPILimiter, ABC):
         self.__response_factory = response_factory
 
     def ignore_path(self, path: str):
+        path = path.lstrip("/")
         ignored = list(self.__ignored_paths)
         ignored.append(path)
         self.__ignored_paths = ignored

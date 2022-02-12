@@ -41,7 +41,7 @@ def middleware_limiter(request, limit) -> MiddlewareLimiter:
     )
 
 
-def test_middleware_limiter(app, limit, middleware_limiter, comparer):
+def test_middleware_should_limit_next_request(app, limit, middleware_limiter, comparer):
     app.add_middleware(
         BaseHTTPMiddleware,
         dispatch=middleware_limiter.dispatch,
@@ -58,3 +58,17 @@ def test_middleware_limiter(app, limit, middleware_limiter, comparer):
         retry_after=float(blocked_response.headers["retry-after"]),
         interval=limit.interval,
     )
+
+
+def test_middleware_should_ignore_ignored_path(
+    app, limit, middleware_limiter, comparer
+):
+    middleware_limiter.ignore_path("/there")
+    app.add_middleware(
+        BaseHTTPMiddleware,
+        dispatch=middleware_limiter.dispatch,
+    )
+    client = TestClient(app)
+
+    for _ in range(2 * limit.hits):
+        assert client.get("/there").json() == "Hello there"
