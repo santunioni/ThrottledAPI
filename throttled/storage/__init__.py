@@ -8,4 +8,4 @@ from throttled.strategies import Strategies
 class BaseStorage(ABC):
     @abstractmethod
     def get_window_manager(self, strategy: Strategies, limit: Rate) -> _WindowManager:
-        ...
+        """Return a _WindowManager for the given strategy and rate limit."""

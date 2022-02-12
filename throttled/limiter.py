@@ -1,8 +1,8 @@
 import asyncio
 import functools
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar, cast
 
-from throttled._exceptions import RateLimitExceeded
+from throttled.exceptions import RateLimitExceeded
 from throttled.models import Hit, Rate
 from throttled.storage import BaseStorage
 from throttled.strategies import Strategies
@@ -52,4 +52,4 @@ class Limiter:
             self.limit(key)
             return await func(*args, **kwargs)
 
-        return a_wrapper if asyncio.iscoroutinefunction(func) else wrapper
+        return cast(FuncT, a_wrapper if asyncio.iscoroutinefunction(func) else wrapper)

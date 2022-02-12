@@ -7,7 +7,7 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
 
-from throttled._exceptions import RateLimitExceeded
+from throttled.exceptions import RateLimitExceeded
 from throttled.limiter import Limiter
 from throttled.models import Rate
 from throttled.storage import BaseStorage

@@ -72,9 +72,10 @@ pre-commit = "^2.16.0"
 devtools = "^0.8.0"
 bpython = "^0.22.1"
 fastapi = "^0.72.0"
-redis = "^4.1.1"
+redis = "^4.0.0"
 pytest-pylint = "^0.18.0"
 pylint-pytest = "^1.1.2"
+redislite = "^6.0.674960"
 
 [tool.poetry.extras]
 redis = ["redis"]

@@ -12,6 +12,9 @@ test:
 
 checks: lint mypy test
 
+git-hooks:
+	@pre-commit run --all-files --hook-stage merge-commit
+
 push:
 	@poetry build
 	@git push && git push --tags
