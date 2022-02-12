@@ -7,7 +7,7 @@ from throttled.strategies import Strategies
 numbers_almost_equals = NumbersComparer(error=1e-2).almost_equals
 
 
-def test_moving_window_limiter(limit, limiter_for):
+def test_limiter_should_block_after_reaching_request_limit(limit, limiter_for):
     limiter = limiter_for(Strategies.MOVING_WINDOW)
     key = "my-custom-key"
 
