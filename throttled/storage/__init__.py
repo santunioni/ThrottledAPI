@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 
 from throttled.models import Rate
 from throttled.storage._abstract import _WindowManager
+from throttled.strategies import Strategies
 
 
 class BaseStorage(ABC):
     @abstractmethod
-    def get_window_manager(self, strategy: object, limit: Rate) -> _WindowManager:
+    def get_window_manager(self, strategy: Strategies, limit: Rate) -> _WindowManager:
         ...

@@ -1,7 +1,6 @@
-from typing import Callable, Mapping, Type
+from typing import Callable, Mapping
 
-from throttled.strategy import FixedWindowStrategy, MovingWindowStrategy
-from throttled.strategy.base import Strategy
+from throttled.strategies import Strategies
 
 DurationCalcType = Callable[[float, float], float]
 
@@ -14,7 +13,7 @@ def moving_window_duration_calc(_: float, interval: float) -> float:
     return interval
 
 
-DUR_REGISTRY: Mapping[Type[Strategy], DurationCalcType] = {
-    FixedWindowStrategy: fixed_window_duration_calc,
-    MovingWindowStrategy: moving_window_duration_calc,
+DUR_REGISTRY: Mapping[Strategies, DurationCalcType] = {
+    Strategies.FIXED_WINDOW: fixed_window_duration_calc,
+    Strategies.MOVING_WINDOW: moving_window_duration_calc,
 }

@@ -7,9 +7,11 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
 
-from throttled.exceptions import RateLimitExceeded
+from throttled._exceptions import RateLimitExceeded
 from throttled.limiter import Limiter
-from throttled.strategy.base import Strategy
+from throttled.models import Rate
+from throttled.storage import BaseStorage
+from throttled.strategies import Strategies
 
 
 class HTTPLimitExceeded(HTTPException):
@@ -44,10 +46,12 @@ class FastAPILimiter(ABC):
 
     def __init__(
         self,
-        strategy: Strategy,
+        limit: Rate,
+        storage: BaseStorage,
+        strategy: Strategies = Strategies.MOVING_WINDOW,
         detail_factory: DetailFactory = key_detail_factory,
     ):
-        self.__limiter = Limiter(strategy)
+        self.__limiter = Limiter(limit, storage, strategy)
         self.__detail_factory = detail_factory
 
     def limit(self, key: str):
@@ -88,11 +92,18 @@ class MiddlewareLimiter(FastAPILimiter, ABC):
 
     def __init__(
         self,
-        strategy: Strategy,
+        limit: Rate,
+        storage: BaseStorage,
+        strategy: Strategies = Strategies.MOVING_WINDOW,
         detail_factory: DetailFactory = key_detail_factory,
         response_factory: ResponseFactory = default_response_factory,
     ):
-        super().__init__(strategy=strategy, detail_factory=detail_factory)
+        super().__init__(
+            strategy=strategy,
+            limit=limit,
+            storage=storage,
+            detail_factory=detail_factory,
+        )
         self.__response_factory = response_factory
 
     def ignore_path(self, path: str):

@@ -10,7 +10,7 @@ from throttled.models import Hit, Rate
 from throttled.storage import BaseStorage
 from throttled.storage._abstract import _HitsWindow, _WindowManager
 from throttled.storage._duration import DUR_REGISTRY, DurationCalcType
-from throttled.strategy.base import Strategy
+from throttled.strategies import Strategies
 
 
 class _MemoryWindow(_HitsWindow):
@@ -19,7 +19,6 @@ class _MemoryWindow(_HitsWindow):
     def __init__(self, duration: float):
         self.__expire_at = time.time() + duration
         self.__hits = 0
-        super().__init__()
 
     def incr(self, hits: int = 1) -> int:
         self.__hits += hits
@@ -65,11 +64,11 @@ class MemoryStorage(BaseStorage):
         self.__cache = cache
 
     def get_window_manager(
-        self, strategy: Strategy, limit: Rate
+        self, strategy: Strategies, limit: Rate
     ) -> _MemoryWindowManager:
         return _MemoryWindowManager(
             interval=limit.interval,
-            duration_func=DUR_REGISTRY[strategy.__class__],
+            duration_func=DUR_REGISTRY[strategy],
             cache=self.__cache,
         )
 

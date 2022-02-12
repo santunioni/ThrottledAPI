@@ -8,27 +8,26 @@ from throttled.models import Hit, Rate
 from throttled.storage import BaseStorage
 from throttled.storage._abstract import _HitsWindow, _WindowManager
 from throttled.storage._duration import DUR_REGISTRY, DurationCalcType
-from throttled.strategy.base import Strategy
+from throttled.strategies import Strategies
 
 
 class _RedisWindow(_HitsWindow):
-    __slots__ = ("__client", "__interval", "__key", "__duration_calc")
+    __slots__ = ("__client", "__interval", "__hit", "__duration_func")
 
     def __init__(
-        self, client: Redis, interval: int, hit: Hit, duration_func: DurationCalcType
+        self, interval: float, client: Redis, hit: Hit, duration_func: DurationCalcType
     ):
         self.__client = client
         self.__interval = interval
-        self.__hit = hit
         self.__duration_func = duration_func
-        super().__init__()
+        self.__hit = hit
 
     def incr(self, hits: int = 1) -> int:
         value = self.__client.incrby(name=self.__hit.key, amount=hits)
         if value == hits:
             self.__client.pexpire(
                 name=self.__hit.key,
-                time=int(1000 * self.__duration_func(self.__hit.time, self.__interval)),
+                time=int(self.__duration_func(self.__hit.time, self.__interval) * 1e3),
             )
         return value
 
@@ -37,13 +36,13 @@ class _RedisWindow(_HitsWindow):
         return value
 
     def get_remaining_seconds(self) -> float:
-        return self.__client.pttl(name=self.__hit.key) / 1000
+        return self.__client.pttl(name=self.__hit.key) * 1e-3
 
 
 class _RedisWindowManager(_WindowManager):
-    __slots__ = ("__interval", "__client", "__duration_calc")
+    __slots__ = ("__interval", "__client", "__duration_func")
 
-    def __init__(self, interval: int, client: Redis, duration_func: DurationCalcType):
+    def __init__(self, interval: float, client: Redis, duration_func: DurationCalcType):
         self.__client = client
         self.__interval = interval
         self.__duration_func = duration_func
@@ -65,11 +64,11 @@ class RedisStorage(BaseStorage):
         self.__client = client
 
     def get_window_manager(
-        self, strategy: Strategy, limit: Rate
+        self, strategy: Strategies, limit: Rate
     ) -> _RedisWindowManager:
         return _RedisWindowManager(
-            interval=int(limit.interval),
-            duration_func=DUR_REGISTRY[strategy.__class__],
+            interval=limit.interval,
+            duration_func=DUR_REGISTRY[strategy],
             client=self.__client,
         )
 
