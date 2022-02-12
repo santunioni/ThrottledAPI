@@ -1,3 +1,15 @@
+## 0.1.16a29 (2022-02-12)
+
+### Refactor
+
+- make strategies a Enum
+
+### Feat
+
+- implement strategies with redis storage
+- implement redis storage
+- add decr method to MemoryWindow
+
 ## 0.1.16a28 (2022-02-08)
 
 ## 0.1.16a27 (2022-02-08)
