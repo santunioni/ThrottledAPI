@@ -2,7 +2,7 @@
 Fixed window rate limiter is very hard to test because we can't control
 at what time we are hitting the limited resources.
 
-Therefore, we are only testing the retry_after parameter is lesser then
+Therefore, we are only testing the retry_after parameter is lesser than
 the interval for the window.
 """
 
@@ -31,7 +31,7 @@ def time_to_window_begin(limit):
 
 async def test_hit_fixed_window_at_begin(key, limit, limiter_for):
     """
-    Hitting a fixed window at begin works the same way as first hiting a moving window.
+    Hitting a fixed window at begin works the same way as first hitting a moving window.
     """
     limiter = limiter_for(Strategies.FIXED_WINDOW)
     await asyncio.sleep(time_to_window_begin(limit))
@@ -63,24 +63,3 @@ async def test_hit_fixed_window_at_half(key, limit, limiter_for):
         limiter.limit(key)
 
     assert err.value.retry_after < limit.interval
-
-
-def time_to_window_almost_finishes(limit):
-    imprecision = limit.interval * 1e-1
-    return limit.interval - time_in_window(limit) - imprecision
-
-
-async def test_burst_when_window_is_ending(key, limiter_for, limit):
-    limiter = limiter_for(Strategies.FIXED_WINDOW)
-    await asyncio.sleep(time_to_window_almost_finishes(limit))
-
-    success = 0
-    try:
-        while success <= 3 * limit.hits:
-            limiter.limit(key)
-            success += 1
-    except RateLimitExceeded as err:
-        assert err.retry_after < limit.interval
-        assert limit.hits <= success <= 2 * limit.hits
-    else:
-        assert success == 2 * limit.hits
