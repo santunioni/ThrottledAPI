@@ -75,7 +75,7 @@ fastapi = "^0.72.0"
 redis = "^4.0.0"
 pytest-pylint = "^0.18.0"
 pylint-pytest = "^1.1.2"
-redislite = "^6.0.674960"
+fakeredis = "^1.7.0"
 
 [tool.poetry.extras]
 redis = ["redis"]
@@ -115,7 +115,7 @@ deps = pytest
        pytest-cov
        pytest-asyncio
        redis
-       redislite
+       fakeredis
        fastapi
        requests
 commands = pytest tests

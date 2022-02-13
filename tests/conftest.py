@@ -1,7 +1,7 @@
 from math import tanh
 
+import fakeredis
 import pytest
-import redislite
 
 from throttled.limiter import Limiter
 from throttled.models import Rate
@@ -12,7 +12,7 @@ from throttled.strategies import Strategies
 
 
 def redis() -> RedisStorage:
-    return RedisStorage(client=redislite.Redis())
+    return RedisStorage(client=fakeredis.FakeRedis())
 
 
 @pytest.fixture(params=[MemoryStorage, redis])
@@ -54,8 +54,8 @@ class NumbersComparer:
 @pytest.fixture
 def comparer(limit) -> NumbersComparer:
     """
-    Error tolerance
-    From 5% for larger intervals to 15% for smaller intervals.
+    This comparer implements error tolerance for comparing numbers in tests.
+    Tolerance: from 5% for larger intervals to 15% for smaller intervals.
 
     :return: Error tolerance when comparing numbers
     """

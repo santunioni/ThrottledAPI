@@ -33,10 +33,6 @@ def key_detail_factory(exc: RateLimitExceeded) -> str:
     return f"Rate exceeded for key={exc.key}."
 
 
-def null_detail_factory(_: RateLimitExceeded) -> None:
-    return None
-
-
 class FastAPILimiter(ABC):
     """First adapter between limiters APIs and FastAPI"""
 
@@ -91,7 +87,7 @@ class MiddlewareLimiter(FastAPILimiter, ABC):
         limit: Rate,
         storage: BaseStorage,
         strategy: Strategies = Strategies.MOVING_WINDOW,
-        detail_factory: DetailFactory = key_detail_factory,
+        detail_factory: DetailFactory = lambda exc: None,
         response_factory: ResponseFactory = default_response_factory,
     ):
         super().__init__(
