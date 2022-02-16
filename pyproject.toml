@@ -76,6 +76,7 @@ redis = "^4.0.0"
 pytest-pylint = "^0.18.0"
 pylint-pytest = "^1.1.2"
 fakeredis = "^1.7.0"
+pytest-bdd = "^5.0.0"
 
 [tool.poetry.extras]
 redis = ["redis"]
@@ -97,6 +98,7 @@ basepython = python3
 deps = pytest
        pytest-randomly
        pytest-cov
+       pytest-bdd
        pytest-asyncio
        redis
        fakeredis
