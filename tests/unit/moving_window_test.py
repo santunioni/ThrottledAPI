@@ -1,6 +1,6 @@
 import pytest
 
-from tests.conftest import NumbersComparer
+from tests.utils_for_test import NumbersComparer
 from throttled.exceptions import RateLimitExceeded
 from throttled.strategies import Strategies
 

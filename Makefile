@@ -2,7 +2,7 @@ lint:
 	@poetry run isort .
 	@poetry run black .
 	@poetry run pylint --rcfile=.pylint.cfg throttled
-	@poetry run pylint --rcfile=.pylint.cfg tests
+	@poetry run pylint --rcfile=.pylint.cfg --disable=redefined-outer-name tests
 
 mypy:
 	@poetry run mypy .

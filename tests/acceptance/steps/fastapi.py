@@ -1,20 +1,16 @@
-from functools import partial
-
 import pytest
 from fastapi import FastAPI
-from pytest_bdd import given, parsers, scenario, then, when
+from pytest_bdd import given, parsers, then, when
 from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient
 
-from tests.conftest import NOT_SET, NumbersComparer
+from tests.utils_for_test import NOT_SET, NumbersComparer
 from throttled.fastapi import IPLimiter, TotalLimiter
 from throttled.fastapi.base import key_detail_factory
 from throttled.models import Rate
 from throttled.storage.memory import MemoryStorage
 from throttled.strategies import Strategies
-
-scenario = partial(scenario, "../features/fastapi_limiter.feature")
 
 
 @pytest.fixture
@@ -92,13 +88,3 @@ def retry_after(context, seconds):
 def ignore_path(context):
     for limiter in context.limiters:
         limiter.ignore_path("/there")
-
-
-@scenario("The limiter is ignoring a given path")
-def test_fastapi_limiter_should_ignore_ignored_paths():
-    pass
-
-
-@scenario("There is a global limiter in the API")
-def test_fastapi_limiter_should_limiter_excessive_requests():
-    pass
