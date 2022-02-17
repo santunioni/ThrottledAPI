@@ -1,6 +1,6 @@
 # ThrottledAPI
 
-This repo aims to be an audacious rate limiter for FastAPI. 
+ThrottledAPI is a rate limiter for FastAPI. 
 Check [our features](tests/acceptance/features/fastapi_limiter.feature) to see the use-cases already tested.
 
 ## Why another rate limiter for FastAPI?
@@ -21,23 +21,93 @@ Just use `MemoryStorage` for the task.
     - Want to limit calls to all your API instances by user or IP? A shared cache is what you need. 
 Our `RedisStorage` implementation is an adapter for the famous `redis` package. Other implementations + asyncio support are comming...
 
-## Instalation
+## Install
 
 Just use your favorite python package manager. Here are two examples:
 
 - With pip: `pip install throttled`
 - With poetry: `poetry add throttled`
 
-## Usage
+## Use
 
+### Use existing limiters
+
+We already implemented `TotalLimiter` and `IPLimiter` for you:
+
+- `TotalLimiter`: limits all calls to your API, so you can assure it won't suffocate with too many requests.
+- `IPLimiter`: as the name suggests, limits requests by IP.
+
+### Implement custom limiters
+
+You can implement new limiters easily extending from `FastAPILimiter` or `MiddlewareLimiter`
 ```python
+# Your IDE will help you find the imports
 
+class UserLimiter(FastAPILimiter):
+    """Client specific limiter"""
+
+    def __call__(self, request: Request, user: Optional[UserID] = Depends(get_current_user)):
+        # The request parameter is mandatory
+        self.limit(key=f"username={user.username}")
+```
+
+### Attach to the API
+
+There are two options when using the limiters in your API
+
+#### All limiters as dependencies
+
+This is the simplest usage, requiring less code
+```python
+def create_limiters() -> Sequence[FastAPILimiter]:
+    memory = MemoryStorage(cache={})
+    api_limiter = TotalLimiter(limit=Rate(2000, 1), storage=memory)
+    
+    redis = RedisStorage(client=Redis.from_url("redis://localhost:0"))
+    ip_limiter = IPLimiter(limit=Rate(10, 1), storage=redis)
+    user_limiter = UserLimiter(limit=Rate(2, 5), storage=redis)
+    
+    return api_limiter, ip_limiter, user_limiter
+
+
+def create_app(limiters: Sequence[FastAPILimiter] = tuple()) -> FastAPI:
+    """Creates a FastAPI app with attached limiters and routes"""
+    api = FastAPI(title="Snacks bar", dependencies=limiters)
+
+    api.include_router(products_router, prefix="/products")
+    api.include_router(users_router, prefix="/users")
+    return api
+
+
+app = create_app(limiters=create_limiters())
+```
+
+#### Some limiters as middlewares
+
+Although FastAPI dependency injection is really powerfull, some limiters doesn´t require any special resource in 
+other to do their job. In that case you cut some latency if using the limiter as a Middleware. 
+```python
+def create_app(limiters: Sequence[FastAPILimiter] = tuple()) -> FastAPI:
+    """Creates a FastAPI app with attached limiters and routes"""
+    dependencies, middlewares = split_dependencies_and_middlewares(*limiters)
+
+    api = FastAPI(title="Snacks bar", dependencies=dependencies)
+
+    api.include_router(products_router, prefix="/products")
+    api.include_router(users_router, prefix="/users")
+
+    for mid in middlewares:
+        api.add_middleware(BaseHTTPMiddleware, dispatch=mid)
+        
+    return api
+
+
+app = create_app(limiters=create_limiters())  # create_limiter: same function above
 ```
 
 ## Middleware vs Dependency
 
-Although FastAPI dependency injection is really powerfull, some limiters doesn´t require any special resource in other to use it.
-In that case you cut some latency if using the limiter as a Middleware. To do that, just extend our `MiddlewareLimiter`, which is 
+To do that, just extend our `MiddlewareLimiter`, which is 
 a extension of `FastAPILimiter` to work as a middleware.
 
 ### When implementing a custom limiter, how to choose between extending `FastAPILimiter` or `MiddlewareLimiter`?
