@@ -2,6 +2,8 @@
 
 ThrottledAPI is a rate limiter for FastAPI. 
 Check [our features](tests/acceptance/features/fastapi_limiter.feature) to see the use-cases already tested.
+Despite only a few acceptance tests, the code base is 99% tested by unit and integration tests. It is also full checked with 
+type hints, assuring code great code quality.
 
 ## Why another rate limiter for FastAPI?
 
@@ -107,10 +109,7 @@ app = create_app(limiters=create_limiters())  # create_limiter: same function ab
 
 ## Middleware vs Dependency
 
-To do that, just extend our `MiddlewareLimiter`, which is 
-a extension of `FastAPILimiter` to work as a middleware.
-
-### When implementing a custom limiter, how to choose between extending `FastAPILimiter` or `MiddlewareLimiter`?
+When implementing a custom limiter, how to choose between extending `FastAPILimiter` or `MiddlewareLimiter`?
 
 ```mermaid
 stateDiagram-v2
