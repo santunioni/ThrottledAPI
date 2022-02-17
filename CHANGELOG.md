@@ -1,3 +1,126 @@
+## 0.1.16a38 (2022-02-17)
+
+## 0.1.16a36 (2022-02-12)
+
+## 0.1.16a35 (2022-02-12)
+
+## 0.1.16a34 (2022-02-12)
+
+## 0.1.16a33 (2022-02-12)
+
+## 0.1.16a32 (2022-02-12)
+
+## 0.1.16a31 (2022-02-12)
+
+## 0.1.16a30 (2022-02-12)
+
+## 0.1.16a29 (2022-02-12)
+
+### Refactor
+
+- make strategies a Enum
+
+### Feat
+
+- implement strategies with redis storage
+- implement redis storage
+- add decr method to MemoryWindow
+
+## 0.1.16a28 (2022-02-08)
+
+## 0.1.16a27 (2022-02-08)
+
+## 0.1.16a26 (2022-02-07)
+
+## 0.1.16a25 (2022-02-07)
+
+### Fix
+
+- cast retry-after http header
+- window duration in fixed window strategy for memory storage
+
+## 0.1.16a24 (2022-02-07)
+
+### Fix
+
+- add cast to str in exc.retry_after
+
+## 0.1.16a23 (2022-02-07)
+
+### Fix
+
+- check if FastAPILimiter instead of Limiter
+
+## 0.1.16a21 (2022-02-07)
+
+## 0.1.16a20 (2022-02-03)
+
+## 0.1.16a19 (2022-02-03)
+
+### Refactor
+
+- fastapi limiters
+
+## 0.1.16a18 (2022-01-30)
+
+### Feat
+
+- implement moving window for memory storage
+
+### Perf
+
+- optimize fixed window strategy
+
+## 0.1.16a17 (2022-01-25)
+
+## 0.1.16a16 (2022-01-25)
+
+## 0.1.16a15 (2022-01-24)
+
+### Refactor
+
+- fastapi module
+
+## 0.1.16a14 (2022-01-23)
+
+### Fix
+
+- remove exception being raised improperty in fastapi.builter
+
+## 0.1.16a13 (2022-01-23)
+
+### Fix
+
+- implement abstract method
+
+## 0.1.16a12 (2022-01-23)
+
+### Refactor
+
+- extract Limiter
+
+## 0.1.16a11 (2022-01-23)
+
+### Fix
+
+- wrong import
+
+## 0.1.16a10 (2022-01-23)
+
+## 0.1.16a9 (2022-01-23)
+
+### Fix
+
+- window strategy
+
+## 0.1.16a8 (2022-01-23)
+
+### Fix
+
+- middleware
+
+## 0.1.16a37 (2022-02-17)
+
 ## 0.1.16a36 (2022-02-12)
 
 ## 0.1.16a35 (2022-02-12)
