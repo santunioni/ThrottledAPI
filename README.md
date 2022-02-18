@@ -1,27 +1,25 @@
 # ThrottledAPI
 
-ThrottledAPI is a rate limiter for FastAPI. 
-Check [our features](tests/acceptance/features/fastapi_limiter.feature) to see the use-cases already tested.
-Despite only a few acceptance tests, the code base is 99% tested by unit and integration tests. It is also full checked with 
-type hints, assuring code great code quality.
+ThrottledAPI is a rate limiter for FastAPI.
+Check [our features](tests/acceptance/features/fastapi_limiter.feature) to see the use-cases already tested. The code base is 99% covered by unit and integration tests. It is also full type checked with type hints, assuring code with great quality.
 
 ## Why another rate limiter for FastAPI?
 
-Why another rate limiter for FastAPI, if we already have 
-[slowapi](https://github.com/laurentS/slowapi) and 
-[fastapi-limiter](https://github.com/long2ice/fastapi-limiter)? This limiter glues what is good from both projects and 
+Why another rate limiter for FastAPI, if we already have
+[slowapi](https://github.com/laurentS/slowapi) and
+[fastapi-limiter](https://github.com/long2ice/fastapi-limiter)? This limiter glues what is good from both projects and
 adds a bit more. Here is a list of reasons:
 
-- The `throttled-api` rate limiter takes full advantage from the composable dependency injection system in FastAPI. 
+- The `throttled-api` rate limiter takes full advantage from the composable dependency injection system in FastAPI.
 That means you can also create limiters per resource.
-    - Want to limit requests per IP or per user? Got it! 
-    - Want to limit requests based on another weird parameter you are receiving? Just extend our `FastAPILimiter` and you
+  - Want to limit requests per IP or per user? Got it!
+  - Want to limit requests based on another weird parameter you are receiving? Just extend our `FastAPILimiter` and you
 are good to go!
-- You can use different storage storages backends (different implementations for `BaseStorage`) for each limiter.
-    - Want to each API instance to 2000 requests per second? You don´t need more than a *in-memory* counter.
+- You can use different storage backends (different implementations for `BaseStorage`) for each limiter.
+  - Want to limit each API instance to 2000 requests per second? You don´t need more than a *in-memory* counter.
 Just use `MemoryStorage` for the task.
-    - Want to limit calls to all your API instances by user or IP? A shared cache is what you need. 
-Our `RedisStorage` implementation is an adapter for the famous `redis` package. Other implementations + asyncio support are comming...
+  - Want to limit calls to all your API instances by user or IP? A shared cache is what you need.
+Our `RedisStorage` implementation is an adapter for the famous [redis](https://github.com/redis/redis-py) package. Other implementations + asyncio support are coming...
 
 ## Install
 
@@ -29,6 +27,9 @@ Just use your favorite python package manager. Here are two examples:
 
 - With pip: `pip install throttled`
 - With poetry: `poetry add throttled`
+
+The package is in an early development stage. This means the API can change a lot along the way, before hitting 1.0.0,
+given community feedback. I recommend you pin the version that works for you exactly when using the library for now.
 
 ## Use
 
@@ -42,13 +43,14 @@ We already implemented `TotalLimiter` and `IPLimiter` for you:
 ### Implement custom limiters
 
 You can implement new limiters easily extending from `FastAPILimiter` or `MiddlewareLimiter`
+
 ```python
 # Your IDE will help you find the imports
 
 class UserLimiter(FastAPILimiter):
     """Client specific limiter"""
 
-    def __call__(self, request: Request, user: Optional[UserID] = Depends(get_current_user)):
+    def __call__(self, request: Request, user: UserID = Depends(get_current_user)):
         # The request parameter is mandatory
         self.limit(key=f"username={user.username}")
 ```
@@ -60,6 +62,7 @@ There are two options when using the limiters in your API
 #### All limiters as dependencies
 
 This is the simplest usage, requiring less code
+
 ```python
 def create_limiters() -> Sequence[FastAPILimiter]:
     memory = MemoryStorage(cache={})
@@ -86,8 +89,9 @@ app = create_app(limiters=create_limiters())
 
 #### Some limiters as middlewares
 
-Although FastAPI dependency injection is really powerfull, some limiters doesn´t require any special resource in 
-other to do their job. In that case you cut some latency if using the limiter as a Middleware. 
+Although FastAPI dependency injection is really powerful, some limiters doesn't require any special resource in
+other to do their job. In that case you cut some latency if using the limiter as a Middleware.
+
 ```python
 def create_app(limiters: Sequence[FastAPILimiter] = tuple()) -> FastAPI:
     """Creates a FastAPI app with attached limiters and routes"""
@@ -119,7 +123,7 @@ stateDiagram-v2
     FirstQuestion: What type of limiter should I choose?
     FirstQuestion --> FirstCondition
     
-    FirstCondition: Limitting depends on resources other\nthan Request object from Starlette?
+    FirstCondition: Limiting depends on resources other\nthan Request object from Starlette?
     FirstCondition --> FastAPILimiter: yes
     FirstCondition --> MiddlewareLimiter : no
     FastAPILimiter --> SecondQuestion
@@ -127,7 +131,7 @@ stateDiagram-v2
     
     SecondQuestion: What storage should I pick?
     SecondQuestion --> SecondCondition
-    SecondCondition: The parameters you are limitting spams a parameter space.\n Is that space too large?
+    SecondCondition: The parameters you are limiting spams a parameter space.\n Is that space too large?
     SecondCondition --> RedisStorage : yes
     SecondCondition --> ThirdCondition : no
     
@@ -139,3 +143,7 @@ stateDiagram-v2
     MemoryStorage --> End
     End: Attach the limiter to your API     
 ```
+
+## Contributing
+
+Issues, suggestions, PRs are welcome!
