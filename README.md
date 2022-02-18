@@ -38,7 +38,8 @@ given community feedback. I recommend you pin the version that works for you exa
 We already implemented `TotalLimiter` and `IPLimiter` for you:
 
 - `TotalLimiter`: limits all calls to your API, so you can assure it won't suffocate with too many requests.
-- `IPLimiter`: as the name suggests, limits requests by IP.
+- `IPLimiter`: as the name suggests, limits requests by IP.     
+   Disclaimer: generalize getting IP from the `Request` object is not easy, because there is [too many variations in the community](https://en.wikipedia.org/wiki/Talk:X-Forwarded-For#Variations). The `IPLimiter` works when hitting the API running on `uvicorn` from another docker container. However, reverse proxies can complicate things. Notwithstanding, the `ThrottledAPI` archtecture allows creating limiters as you like, so there is nothing stopping you from creating an IP limiter that fits your infrastructure. You can also submit it here as a PR, and I will be glad to merge it in the codebase, given instructions for when to use it. 
 
 ### Implement custom limiters
 
