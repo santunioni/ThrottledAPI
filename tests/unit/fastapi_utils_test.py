@@ -20,6 +20,7 @@ class DependencyLimiter(FastAPILimiter):
 
 
 def test_should_split_dependencies_and_middlewares(limit, storage):
+    # Given all 3 limiters are defined
     dependency_limiter = DependencyLimiter(
         limit=limit, storage=storage, strategy=Strategies.MOVING_WINDOW
     )
@@ -30,14 +31,18 @@ def test_should_split_dependencies_and_middlewares(limit, storage):
         limit=limit, storage=storage, strategy=Strategies.MOVING_WINDOW
     )
 
+    # And their order is random
     limiters = [dependency_limiter, total_limiter, ip_limiter]
     random.shuffle(limiters)
 
+    # When spliting dependencies and middlewares
     dependencies, dispatch_functions = split_dependencies_and_middlewares(*limiters)
 
+    # Should have only 1 dependency
     assert len(dependencies) == 1
     assert dependencies.pop().dependency is dependency_limiter
-
+    
+    # And dispatch functions should contain the other 2 limiters
     assert ip_limiter.dispatch in dispatch_functions
     assert total_limiter.dispatch in dispatch_functions
 
