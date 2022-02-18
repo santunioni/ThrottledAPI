@@ -24,14 +24,6 @@ class _MemoryWindow(_HitsWindow):
         self.__hits += hits
         return self.__hits
 
-    def decr(self, hits: int = 1) -> int:
-        """
-        To be implemented:
-
-        self.__hits -= hits
-        return self.__hits
-        """
-
     def get_remaining_seconds(self) -> float:
         return self.__expire_at - time.time()
 

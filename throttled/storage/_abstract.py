@@ -17,15 +17,6 @@ class _HitsWindow(ABC):
         :return: the current hits number, after increased
         """
 
-    @abstractmethod
-    def decr(self, hits: int = 1) -> int:
-        """
-        Decrease the hit count in this window
-
-        :param hits: the number of hits to decrease in the window
-        :return: the current hits number, after decreased
-        """
-
     def is_expired(self) -> bool:
         """
         Check if this window already expired
