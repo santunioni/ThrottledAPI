@@ -29,7 +29,7 @@ Just use your favorite python package manager. Here are two examples:
 - With poetry: `poetry add throttled`
 
 The package is in an early development stage. This means the API can change a lot along the way, before hitting 1.0.0,
-given community feedback. I recommend you pin the version that works for you exactly when using the library for now.
+given community feedback. I recommend you pin the latest version that works for you when using the library for now.
 
 ## Use
 
