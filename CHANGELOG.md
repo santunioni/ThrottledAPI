@@ -1,3 +1,9 @@
+## 0.2.1 (2022-02-20)
+
+### Fix
+
+- use ip fetching already implemented in Starlette
+
 ## 0.2.0 (2022-02-17)
 
 ## 0.1.16 (2022-02-17)
