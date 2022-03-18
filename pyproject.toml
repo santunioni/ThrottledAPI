@@ -8,11 +8,7 @@ tag_format = "$major.$minor.$patch$prerelease"
 update_changelog_on_bump = true
 annotated_tag = true
 check_consistency = true
-version_files = [
-    "VERSION",
-    "pyproject.toml",
-    "throttled/__init__.py",
-]
+version_files = ["VERSION", "pyproject.toml", "throttled/__init__.py",]
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -33,13 +29,6 @@ module = ["faker.*", "dotenv.*", "redis.*"]
 follow_imports = "skip"
 warn_unused_ignores = true
 
-[[tool.mypy.overrides]]
-module = ["pydantic.*"]
-no_implicit_optional = false
-warn_unused_ignores = false
-disallow_untyped_calls = false
-disallow_untyped_globals = false
-
 [tool.poetry]
 name = "throttled"
 version = "0.2.1"
@@ -49,10 +38,7 @@ readme = "README.md"
 homepage = "https://github.com/santunioni/ThrottledAPI"
 license = "MIT"
 repository = "https://github.com/santunioni/ThrottledAPI"
-include = [
-    "throttled/py.typed",
-    "LICENSE"
-]
+include = ["throttled/py.typed", "LICENSE"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -77,6 +63,8 @@ pytest-pylint = "^0.18.0"
 pylint-pytest = "^1.1.2"
 fakeredis = "^1.7.0"
 pytest-bdd = "^5.0.0"
+pytest-watch = "^4.2.0"
+assertpy = "^1.1"
 
 [tool.poetry.extras]
 redis = ["redis"]
@@ -84,7 +72,9 @@ fastapi = ["fastapi"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-addopts = "--cov-report html:coverage --cov-report term --cov=throttled"
+#addopts = "--cov-report html:coverage --cov-report term --cov=throttled"
+python_files = ["*test*.py", "*should*.py"]
+python_functions = ["test_*", "should_*"]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -104,5 +94,4 @@ deps = pytest
        fakeredis
        fastapi
        requests
-commands = pytest tests
-"""
+commands = pytest tests"""

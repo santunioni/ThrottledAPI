@@ -26,9 +26,9 @@ class _HitsWindow(ABC):
         return self.get_remaining_seconds() <= 0
 
 
-class _WindowManager(ABC):
+class _WindowRepository(ABC):
     @abstractmethod
-    def get_current_window(self, hit: Hit) -> _HitsWindow:
+    def get_active_window(self, hit: Hit) -> _HitsWindow:
         """
         Get the current active HitsWindow
 

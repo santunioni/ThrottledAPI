@@ -8,7 +8,7 @@ from typing import MutableMapping, Optional
 
 from throttled.models import Hit, Rate
 from throttled.storage import BaseStorage
-from throttled.storage._abstract import _HitsWindow, _WindowManager
+from throttled.storage._abstract import _HitsWindow, _WindowRepository
 from throttled.storage._duration import DUR_REGISTRY, DurationCalcType
 from throttled.strategies import Strategies
 
@@ -28,7 +28,7 @@ class _MemoryWindow(_HitsWindow):
         return self.__expire_at - time.time()
 
 
-class _MemoryWindowManager(_WindowManager):
+class _MemoryWindowRepository(_WindowRepository):
     __slots__ = ("__interval", "__cache", "__duration_calc")
 
     def __init__(
@@ -43,7 +43,7 @@ class _MemoryWindowManager(_WindowManager):
         self.__interval = interval
         self.__duration_calc = duration_func
 
-    def get_current_window(self, hit: Hit) -> _MemoryWindow:
+    def get_active_window(self, hit: Hit) -> _MemoryWindow:
         window = self.__cache.get(hit.key)
         if window is None or window.is_expired():
             self.__cache[hit.key] = window = _MemoryWindow(
@@ -59,10 +59,10 @@ class MemoryStorage(BaseStorage):
     ):
         self.__cache = cache
 
-    def get_window_manager(
+    def get_window_repository(
         self, strategy: Strategies, limit: Rate
-    ) -> _MemoryWindowManager:
-        return _MemoryWindowManager(
+    ) -> _MemoryWindowRepository:
+        return _MemoryWindowRepository(
             interval=limit.interval,
             duration_func=DUR_REGISTRY[strategy],
             cache=self.__cache,

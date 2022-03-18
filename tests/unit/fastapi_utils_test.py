@@ -44,14 +44,14 @@ def fastapi_dependencies_are_the_same(
 def test_should_split_dependencies_and_middlewares(limit, storage):
     # Given 2 middleware limiters and 1 limiter as dependency
     limiters = given_all_limiters(limit, storage)
-    dependency_limiiter, ip_limiter, total_limiter = limiters
+    dependency_limiter, ip_limiter, total_limiter = limiters
 
     # When spliting dependencies and middlewares
     dependencies, dispatch_functions = split_dependencies_and_middlewares(*limiters)
 
     # Then it should return only limiter as dependency
     assert fastapi_dependencies_are_the_same(
-        dependencies, [Depends(dependency_limiiter)]
+        dependencies, [Depends(dependency_limiter)]
     )
 
     # And the other two limiters dispatch method as dispatch functions

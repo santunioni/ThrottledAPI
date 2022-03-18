@@ -11,7 +11,7 @@ FuncT = TypeVar("FuncT", bound=Callable[..., Any])
 
 
 class Limiter:
-    __slots__ = ("__limit", "__window_manager")
+    __slots__ = ("__limit", "__windows_repository")
 
     def __init__(
         self,
@@ -20,7 +20,7 @@ class Limiter:
         strategy: Strategies,
     ):
         self.__limit = limit
-        self.__window_manager = storage.get_window_manager(
+        self.__windows_repository = storage.get_window_repository(
             strategy=strategy, limit=limit
         )
 
@@ -29,7 +29,7 @@ class Limiter:
         :param hit: The hit to be tested
         :raises: RateLimitExceeded
         """
-        window = self.__window_manager.get_current_window(hit)
+        window = self.__windows_repository.get_active_window(hit)
         if window.incr(hit.cost) > self.__limit.hits:
             raise RateLimitExceeded(
                 hit.key,

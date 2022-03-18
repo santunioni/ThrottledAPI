@@ -6,7 +6,7 @@ from redis.client import Redis
 
 from throttled.models import Hit, Rate
 from throttled.storage import BaseStorage
-from throttled.storage._abstract import _HitsWindow, _WindowManager
+from throttled.storage._abstract import _HitsWindow, _WindowRepository
 from throttled.storage._duration import DUR_REGISTRY, DurationCalcType
 from throttled.strategies import Strategies
 
@@ -35,7 +35,7 @@ class _RedisWindow(_HitsWindow):
         return self.__client.pttl(name=self.__hit.key) * 1e-3
 
 
-class _RedisWindowManager(_WindowManager):
+class _RedisWindowRepository(_WindowRepository):
     __slots__ = ("__interval", "__client", "__duration_func")
 
     def __init__(self, interval: float, client: Redis, duration_func: DurationCalcType):
@@ -43,7 +43,7 @@ class _RedisWindowManager(_WindowManager):
         self.__interval = interval
         self.__duration_func = duration_func
 
-    def get_current_window(self, hit: Hit) -> _RedisWindow:
+    def get_active_window(self, hit: Hit) -> _RedisWindow:
         return _RedisWindow(
             client=self.__client,
             interval=self.__interval,
@@ -59,10 +59,10 @@ class RedisStorage(BaseStorage):
     ):
         self.__client = client
 
-    def get_window_manager(
+    def get_window_repository(
         self, strategy: Strategies, limit: Rate
-    ) -> _RedisWindowManager:
-        return _RedisWindowManager(
+    ) -> _RedisWindowRepository:
+        return _RedisWindowRepository(
             interval=limit.interval,
             duration_func=DUR_REGISTRY[strategy],
             client=self.__client,
