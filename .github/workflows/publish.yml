@@ -15,7 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
-    - uses: abatilo/actions-poetry@v2.0.0
+    - name: Setup poetry
+      run: |
+        pip install --upgrade pip
+        pip install poetry
     - name: Extract dependencies
       run: poetry export --dev > requirements.txt
     - name: Install dependencies
@@ -42,7 +45,10 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python_version: ${{matrix.python_version}}
-    - uses: abatilo/actions-poetry@v2.0.0
+    - name: Setup poetry
+      run: |
+        pip install --upgrade pip
+        pip install poetry
     - name: Extract dependencies
       run: poetry export --dev > requirements.txt
     - name: Install dependencies
