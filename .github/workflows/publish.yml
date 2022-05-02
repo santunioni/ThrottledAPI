@@ -3,7 +3,7 @@ name: Test and Publish the package
 on:
   pull_request:
     branches:
-    - main
+    - master
   push:
     tags:
     - '*.*.*'
