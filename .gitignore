@@ -7,3 +7,4 @@
 **/.tox/
 **/dist/
 **/.vscode/
+coverage.xml
