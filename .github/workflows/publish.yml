@@ -15,22 +15,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
+    - name: Formatting (pre-commit)
+      uses: pre-commit/action@v2.0.3
     - name: Setup poetry
       run: |
         pip install --upgrade pip
         pip install poetry
-    - name: Extract dependencies
-      run: poetry export --dev > requirements.txt
     - name: Install dependencies
-      run: pip install -r requirements.txt
-    - name: Formatting (pre-commit)
-      uses: pre-commit/action@v2.0.3
+      run: poetry install
     - name: Type checking
-      run: mypy .
+      run: poetry run mypy .
     - name: Linting
       run: |
-        pylint --rcfile=.pylint.cfg throttled
-        pylint --rcfile=.pylint.cfg --disable=redefined-outer-name tests
+        poetry run pylint --rcfile=.pylint.cfg throttled
+        poetry run pylint --rcfile=.pylint.cfg --disable=redefined-outer-name tests
 
   tests:
     needs:
@@ -49,14 +47,12 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install poetry
-    - name: Extract dependencies
-      run: poetry export --dev > requirements.txt
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
-        pip install fastapi==${{matrix.fastapi_version}}
+        poetry install
+        poetry run pip install fastapi==${{matrix.fastapi_version}}
     - name: Testing
-      run: pytest tests
+      run: poetry run pytest tests
 
   deploy:
     needs:
@@ -65,7 +61,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
-    - uses: abatilo/actions-poetry@v2.0.0
+    - name: Setup poetry
+      run: |
+        pip install --upgrade pip
+        pip install poetry
     - name: Configure Token
       run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
     - name: Build and Publish
