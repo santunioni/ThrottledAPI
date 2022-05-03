@@ -42,7 +42,6 @@ include = ["throttled/py.typed", "LICENSE"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -65,6 +64,7 @@ fakeredis = "^1.7.0"
 pytest-bdd = "^5.0.0"
 pytest-watch = "^4.2.0"
 assertpy = "^1.1"
+requests = "^2.27.1"
 
 [tool.poetry.extras]
 redis = ["redis"]
