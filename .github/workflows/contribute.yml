@@ -31,3 +31,5 @@ jobs:
       run: poetry run pytest --cov=throttled --cov-report=xml tests
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
