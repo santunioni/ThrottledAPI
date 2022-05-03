@@ -1,4 +1,4 @@
-name: Test and Publish the package
+name: Contributing checks
 
 on:
   pull_request:
@@ -27,20 +27,6 @@ jobs:
       run: |
         poetry run pylint --rcfile=.pylint.cfg throttled
         poetry run pylint --rcfile=.pylint.cfg --disable=redefined-outer-name tests
-
-  tests:
-    needs:
-    - checks
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-    - name: Setup poetry
-      run: |
-        pip install --upgrade pip
-        pip install poetry
-    - name: Install dependencies
-      run: poetry install
     - name: Testing
       run: poetry run pytest --cov=throttled --cov-report=xml tests
     - name: SonarCloud Scan
